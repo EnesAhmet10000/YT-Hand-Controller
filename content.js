@@ -14,6 +14,43 @@
 (() => {
   'use strict';
 
+  const I18N = {
+    tr: {
+      play: '▶ Oynatılıyor', pause: '⏸ Duraklatıldı', speed: 'Hız',
+      mute: '🔇 Ses Kapatıldı', unmute: '🔊 Ses Açıldı',
+      fw5: '⏩ 5 Sn İleri', bw5: '⏪ 5 Sn Geri', fw10: '⏩ +10s', bw10: '⏪ -10s',
+      next: '⏭ Sonraki Video', prev: '⏮ Önceki Video',
+      fsOn: '📺 Tam Ekran', fsOff: '📱 Normal Ekran', vol: 'Ses',
+      active: '🖐 El Kontrolü Aktif',
+      Both_Hands: 'Çift El', Open_Palm: 'Açık El', Index_Up: 'İşaret Yukarı',
+      Palm_Right: 'Sağ Avuç', Palm_Left: 'Sol Avuç', Pointing_Right: 'Sağa İşaret',
+      Pointing_Left: 'Sola İşaret', Vulcan: 'Vulcan', Peace_Sign: 'Zafer', Pinch_Volume: 'Çimdik'
+    },
+    en: {
+      play: '▶ Playing', pause: '⏸ Paused', speed: 'Speed',
+      mute: '🔇 Muted', unmute: '🔊 Unmuted',
+      fw5: '⏩ Forward 5s', bw5: '⏪ Backward 5s', fw10: '⏩ +10s', bw10: '⏪ -10s',
+      next: '⏭ Next Video', prev: '⏮ Previous Video',
+      fsOn: '📺 Fullscreen', fsOff: '📱 Normal Screen', vol: 'Volume',
+      active: '🖐 Hand Control Active',
+      Both_Hands: 'Both Hands', Open_Palm: 'Open Palm', Index_Up: 'Index Up',
+      Palm_Right: 'Palm Right', Palm_Left: 'Palm Left', Pointing_Right: 'Point Right',
+      Pointing_Left: 'Point Left', Vulcan: 'Vulcan', Peace_Sign: 'Peace Sign', Pinch_Volume: 'Pinch'
+    },
+    ar: {
+      play: '▶ تشغيل', pause: '⏸ إيقاف مؤقت', speed: 'السرعة',
+      mute: '🔇 تم الكتم', unmute: '🔊 إلغاء الكتم',
+      fw5: '⏩ تقديم 5 ثوان', bw5: '⏪ تأخير 5 ثوان', fw10: '⏩ +10 ثوان', bw10: '⏪ -10 ثوان',
+      next: '⏭ الفيديو التالي', prev: '⏮ الفيديو السابق',
+      fsOn: '📺 ملء الشاشة', fsOff: '📱 شاشة عادية', vol: 'الصوت',
+      active: '🖐 التحكم باليد نشط',
+      Both_Hands: 'كلتا اليدين', Open_Palm: 'كف مفتوح', Index_Up: 'السبابة لأعلى',
+      Palm_Right: 'الكف لليمين', Palm_Left: 'الكف لليسار', Pointing_Right: 'إشارة لليمين',
+      Pointing_Left: 'إشارة لليسار', Vulcan: 'فولكان', Peace_Sign: 'علامة النصر', Pinch_Volume: 'قرصة'
+    }
+  };
+  let currentLang = 'tr';
+
   // ═══════════════════════════════════════════════════════════════════════════
   //  A. VIDEO CONTROLLER — YouTube <video> Element API
   // ═══════════════════════════════════════════════════════════════════════════
@@ -31,40 +68,48 @@
   const ACTION_MAP = {
     togglePlay: (video) => {
       video.paused ? video.play() : video.pause();
-      return video.paused ? '⏸ Duraklatıldı' : '▶ Oynatılıyor';
+      return video.paused ? I18N[currentLang].pause : I18N[currentLang].play;
     },
     speedUp: (video) => {
       video.playbackRate = Math.min(video.playbackRate + 0.25, 3.0);
-      return `⚡ Hız: ${video.playbackRate.toFixed(2)}x`;
+      return `⚡ ${I18N[currentLang].speed}: ${video.playbackRate.toFixed(2)}x`;
     },
     speedDown: (video) => {
       video.playbackRate = Math.max(video.playbackRate - 0.25, 0.25);
-      return `🐢 Hız: ${video.playbackRate.toFixed(2)}x`;
+      return `🐢 ${I18N[currentLang].speed}: ${video.playbackRate.toFixed(2)}x`;
     },
     toggleMute: (video) => {
       video.muted = !video.muted;
-      return video.muted ? '🔇 Ses Kapatıldı' : '🔊 Ses Açıldı';
+      return video.muted ? I18N[currentLang].mute : I18N[currentLang].unmute;
+    },
+    volumeUp5: (video) => {
+      video.volume = Math.min(1.0, video.volume + 0.05);
+      return `🔊 ${I18N[currentLang].vol}: %${Math.round(video.volume * 100)}`;
+    },
+    volumeDown5: (video) => {
+      video.volume = Math.max(0.0, video.volume - 0.05);
+      return `🔉 ${I18N[currentLang].vol}: %${Math.round(video.volume * 100)}`;
     },
     seekForward: (video) => {
       video.currentTime = Math.min(video.currentTime + 5, video.duration);
-      return '⏩ 5 Sn İleri';
+      return I18N[currentLang].fw5;
     },
     seekBackward: (video) => {
       video.currentTime = Math.max(video.currentTime - 5, 0);
-      return '⏪ 5 Sn Geri';
+      return I18N[currentLang].bw5;
     },
     seekForward10: (video) => {
-      video.currentTime = Math.min(video.currentTime + 10, video.duration);
-      return '⏩ +10s';
+      video.currentTime += 10;
+      return I18N[currentLang].fw10;
     },
     seekBackward10: (video) => {
-      video.currentTime = Math.max(video.currentTime - 10, 0);
-      return '⏪ -10s';
+      video.currentTime -= 10;
+      return I18N[currentLang].bw10;
     },
     nextVideo: (video) => {
       const nextBtn = document.querySelector('.ytp-next-button');
       if (nextBtn) nextBtn.click();
-      return '⏭ Sonraki Video';
+      return I18N[currentLang].next;
     },
     previousVideo: (video) => {
       const prevBtn = document.querySelector('.ytp-prev-button');
@@ -73,14 +118,14 @@
       } else {
         window.history.back();
       }
-      return '⏮ Önceki Video';
+      return I18N[currentLang].prev;
     },
     toggleFullscreen: (video) => {
       const fullScreenBtn = document.querySelector('.ytp-fullscreen-button');
       if (fullScreenBtn) {
-        fullScreenBtn.click(); // YouTube'un kendi butonuna basmak en güvenli yoldur.
-        const isNowFull = fullScreenBtn.getAttribute('title')?.includes('Çık') || document.fullscreenElement;
-        return isNowFull ? "📺 Tam Ekran" : "📱 Normal Ekran";
+        fullScreenBtn.click();
+        const isNowFull = fullScreenBtn.getAttribute('title')?.includes('Çık') || fullScreenBtn.getAttribute('title')?.includes('Exit') || document.fullscreenElement;
+        return isNowFull ? I18N[currentLang].fsOn : I18N[currentLang].fsOff;
       }
       return null;
     },
@@ -221,7 +266,8 @@
     svg.classList.add('visible');
 
     const status = document.getElementById(STATUS_ID);
-    status.textContent = `${icon} ${gestureName}`;
+    const translatedName = I18N[currentLang][gestureName] || gestureName;
+    status.textContent = `${icon} ${translatedName}`;
     status.classList.add('visible');
   }
 
@@ -253,7 +299,7 @@
     const status = document.getElementById(STATUS_ID);
     const pct  = Math.round(volume * 100);
     const bars = '█'.repeat(Math.round(volume * 8)) + '░'.repeat(8 - Math.round(volume * 8));
-    status.textContent = `🤏 Ses: ${pct}%  ${bars}`;
+    status.textContent = `🤏 ${I18N[currentLang].vol}: ${pct}%  ${bars}`;
     status.classList.add('visible');
   }
 
@@ -275,7 +321,7 @@
       if (message.type === 'CAMERA_STATE_CHANGED') {
         if (message.cameraOn) {
           getOrCreateOverlay();
-          showToast('🖐 El Kontrolü Aktif');
+          showToast(I18N[currentLang].active);
         } else {
           removeOverlay();
         }
@@ -323,12 +369,22 @@
     return true; // Asenkron yanıt kanalı açık kalsın
   });
 
-  // İlk yüklenmede kamera state'ini sorgula
-  chrome.runtime.sendMessage({ type: 'GET_CAMERA_STATE' }, (response) => {
-    if (response?.cameraOn) {
-      getOrCreateOverlay();
-      showToast('🖐 El Kontrolü Aktif');
+  // Storage dinleyici - Dil değişikliğine hemen tepki ver
+  chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (namespace === 'local' && changes.language) {
+      currentLang = changes.language.newValue;
     }
+  });
+
+  // İlk yüklenmede kamera state'ini sorgula ve dili bağla
+  chrome.storage.local.get({ language: 'tr' }, (data) => {
+    currentLang = data.language;
+    chrome.runtime.sendMessage({ type: 'GET_CAMERA_STATE' }, (response) => {
+      if (response?.cameraOn) {
+        getOrCreateOverlay();
+        showToast(I18N[currentLang].active);
+      }
+    });
   });
 
 })();

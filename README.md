@@ -22,7 +22,7 @@ Elleriniz yemekten kirlenmiş de olsa, resim yaparken ya da sadece bir Jedi gibi
 
 ## ✨ Özellikler
 
-- **Çimdikleyerek Ses Kontrolü**: İşaret parmağınızı ve başparmağınızı çimdikleyerek sesi dinamik olarak değiştirin. İki parmak arasındaki mesafe, ses seviyesini gerçek zamanlı olarak ayarlar.
+- **Çimdikleyerek Ses Kontrolü (Önerilmez)**: İşaret parmağınızı ve başparmağınızı çimdikleyerek sesi dinamik olarak değiştirin. İki parmak arasındaki mesafe, ses seviyesini gerçek zamanlı olarak ayarlar.
 - **Çift El ile Tam Ekran**: Her iki elinizi de kameraya açık bir şekilde göstererek sinematik bir deneyim için videoyu anında tam ekrana alın.
 - **Gelişmiş Yatay Navigasyon**: Elinizi sağa veya sola işaret ederek videoyu 10 saniye ileri veya geri sarın, veya avuç içinizi döndürerek videolar arası kolayca geçiş yapın.
 - **Trigonometrik Kararlılık & Kusursuz Algılama**: Eski nesil "noktalar arası uzunluk (Euclidean)" ölçme sisteminden **Trigonometrik Açı (Math.atan2)** hesaplama altyapısına geçildi. Eller kameraya ne kadar yakın veya uzak olursa olsun; hafif eğik mi, dik mi olduğu milisaniyeler içinde kusursuzca ayrıştırılır. Çakışma veya yanlış algılama imkansız hale getirildi.
@@ -36,7 +36,7 @@ Elleriniz yemekten kirlenmiş de olsa, resim yaparken ya da sadece bir Jedi gibi
 | Hareket                | İkon  | Varsayılan Eylem       | Açıklama                                                                                       |
 | :--------------------- | :---: | :--------------------- | :--------------------------------------------------------------------------------------------- |
 | **Çift El**            |  👐   | **Tam Ekran**          | İki elinizi açık ve yan yana tutarak videoyu tam ekran moduna geçirin veya çıkın.              |
-| **Çimdik (Pinch)**     |  🤏   | **Gerçek Zamanlı Ses** | İşaret ile başparmağınızı birbirine yaklaştırarak sesi kısın ya da uzaklaştırarak açın.        |
+| **Çimdik (Önerilmez)** |  🤏   | **Gerçek Zamanlı Ses** | İşaret ile başparmağınızı birbirine yaklaştırarak sesi kısın ya da uzaklaştırarak açın.        |
 | **Açık El**            |  ✋   | **Oynat / Duraklat**   | Videoyu durdurmak veya oynatmak için düz ve açık bir el gösterin.                              |
 | **İşaret Yukarı**      |  ☝️   | **Sesi Kapat / Aç**    | Sadece işaret parmağınızı havaya kaldırarak sesi tamamen kapatıp açın.                         |
 | **Sağ / Sol Avuç**     | 🫱/🫲 | **Hızlandır/Yavaşlat** | Avuç içinizi yana çevirerek videonun oynatma hızını ±0.25 oranında artırıp azaltın.            |

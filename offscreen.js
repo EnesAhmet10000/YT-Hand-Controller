@@ -113,6 +113,17 @@
            lm[16].x < lm[14].x && lm[20].x < lm[18].x;
   }
 
+  function isVulcan(lm) {
+    // İşaret(8) ve Orta(12) açık ve bitişik mi
+    const firstGroupOpen = lm[8].y < lm[6].y && lm[12].y < lm[10].y && Math.abs(lm[8].x - lm[12].x) < 0.1;
+    // Yüzük(16) ve Serçe(20) açık ve bitişik mi
+    const secondGroupOpen = lm[16].y < lm[14].y && lm[20].y < lm[18].y && Math.abs(lm[16].x - lm[20].x) < 0.1;
+    // İki grup biribirinden ayrık olmalı (Spock hareketi) "V" şeklinde
+    const isSeparated = Math.abs(lm[12].x - lm[16].x) > 0.05;
+
+    return firstGroupOpen && secondGroupOpen && isSeparated;
+  }
+
   function isPeaceSign(lm) {
     const mainOpen = lm[8].y < lm[6].y && lm[12].y < lm[10].y;
     const othersClosed = lm[16].y > lm[14].y && lm[20].y > lm[18].y;
@@ -132,6 +143,7 @@
     { key: 'palm_left',      recognize: isPalmLeft,      icon: '🫲', name: 'Palm_Left'      },
     { key: 'pointing_right', recognize: isPointingRight, icon: '👉', name: 'Pointing_Right' },
     { key: 'pointing_left',  recognize: isPointingLeft,  icon: '👈', name: 'Pointing_Left'  },
+    { key: 'vulcan',         recognize: isVulcan,        icon: '🖖', name: 'Vulcan'         },
     { key: 'peace_sign',     recognize: isPeaceSign,     icon: '✌️', name: 'Peace_Sign'     },
   ];
 
@@ -148,7 +160,8 @@
   const DEFAULT_SETTINGS = {
     both_hands_open:{ enabled: true, action: 'toggleFullscreen'},
     open_palm:      { enabled: true, action: 'togglePlay'    },
-    index_up:       { enabled: true, action: 'toggleMute'    },
+    index_up:       { enabled: true, action: 'volumeUp5'     },
+    vulcan:         { enabled: true, action: 'volumeDown5'   },
     palm_right:     { enabled: true, action: 'speedUp'       },
     palm_left:      { enabled: true, action: 'speedDown'     },
     pointing_right: { enabled: true, action: 'seekForward10' },
@@ -192,7 +205,9 @@
 
     if (progress >= 1.0 && !dwellState.fired) {
       // Eyleme özel cooldown hesapla
-      const cooldown = gesture.key === 'both_hands_open' ? 2000 : DEFAULT_COOLDOWN;
+      let cooldown = DEFAULT_COOLDOWN;
+      if (gesture.key === 'both_hands_open') cooldown = 2000;
+      if (setting.action === 'volumeUp5' || setting.action === 'volumeDown5') cooldown = 400; // Akıcı ses kontrolü için kısa cooldown
       
       if (now - lastActionTime < cooldown) return;
 
@@ -312,17 +327,29 @@
       }
     }
 
-    // Discrete Gestures
+    // Discrete Gestures: Strictly defined else if hierarchy
     let matched = false;
-    for (const gesture of GESTURE_TABLE) {
-      const setting = gestureSettings[gesture.key];
-      if (!setting || !setting.enabled) continue;
-      if (gesture.recognize(landmarks, results)) {
-        handleDiscreteGesture(gesture, setting);
+    
+    const processGesture = (key, recognizer) => {
+      const s = gestureSettings[key];
+      if (s && s.enabled && recognizer(landmarks, results)) {
+        handleDiscreteGesture(GESTURE_TABLE.find(g => g.key === key), s);
         matched = true;
-        break;
+        return true;
       }
-    }
+      return false;
+    };
+
+    if (processGesture('both_hands_open', isBothHandsOpen)) { /* matched */ }
+    else if (processGesture('vulcan', isVulcan)) { /* matched */ }
+    else if (processGesture('peace_sign', isPeaceSign)) { /* matched */ }
+    else if (processGesture('index_up', isIndexUp)) { /* matched */ }
+    else if (processGesture('palm_right', isPalmRight)) { /* matched */ }
+    else if (processGesture('palm_left', isPalmLeft)) { /* matched */ }
+    else if (processGesture('pointing_right', isPointingRight)) { /* matched */ }
+    else if (processGesture('pointing_left', isPointingLeft)) { /* matched */ }
+    else if (processGesture('open_palm', isOpenPalm)) { /* matched */ }
+
     if (!matched) resetDwell();
   }
 

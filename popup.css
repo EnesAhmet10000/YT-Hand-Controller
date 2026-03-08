@@ -245,7 +245,9 @@ body {
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: background var(--transition), border-color var(--transition);
+  transition:
+    background var(--transition),
+    border-color var(--transition);
 }
 
 .gesture-row:hover {
@@ -368,4 +370,70 @@ body {
   color: var(--text-secondary);
   opacity: 0.6;
   padding-top: 4px;
+}
+
+/* ─── Language Selector ────────────────────────────────────────────────────── */
+.lang-selector-wrapper {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 100;
+}
+
+body.rtl .lang-selector-wrapper {
+  left: auto;
+  right: 16px;
+}
+
+.lang-select {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all var(--transition);
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 22px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238a8a9a'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+}
+
+body.rtl .lang-select {
+  padding-right: 8px;
+  padding-left: 22px;
+  background-position: left 6px center;
+}
+
+.lang-select:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.lang-select:focus {
+  border-color: var(--accent);
+}
+
+.lang-select option {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* ─── RTL Support ──────────────────────────────────────────────────────────── */
+body.rtl {
+  direction: rtl;
+}
+
+body.rtl .action-select {
+  padding-right: 10px;
+  padding-left: 24px;
+  background-position: left 8px center;
 }
