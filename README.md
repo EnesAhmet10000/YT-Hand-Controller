@@ -25,6 +25,7 @@ Elleriniz yemekten kirlenmiş de olsa, resim yaparken ya da sadece bir Jedi gibi
 - **Çimdikleyerek Ses Kontrolü**: İşaret parmağınızı ve başparmağınızı çimdikleyerek sesi dinamik olarak değiştirin. İki parmak arasındaki mesafe, ses seviyesini gerçek zamanlı olarak ayarlar.
 - **Çift El ile Tam Ekran**: Her iki elinizi de kameraya açık bir şekilde göstererek sinematik bir deneyim için videoyu anında tam ekrana alın.
 - **Gelişmiş Yatay Navigasyon**: Elinizi sağa veya sola işaret ederek videoyu 10 saniye ileri veya geri sarın, veya avuç içinizi döndürerek videolar arası kolayca geçiş yapın.
+- **Trigonometrik Kararlılık & Kusursuz Algılama**: Eski nesil "noktalar arası uzunluk (Euclidean)" ölçme sisteminden **Trigonometrik Açı (Math.atan2)** hesaplama altyapısına geçildi. Eller kameraya ne kadar yakın veya uzak olursa olsun; hafif eğik mi, dik mi olduğu milisaniyeler içinde kusursuzca ayrıştırılır. Çakışma veya yanlış algılama imkansız hale getirildi.
 - **Midas Dokunuşu Koruması**: Yerleşik 600ms _Bekleme Süresi (Dwell Time)_ mekanizması sayesinde sistem sadece kasıtlı yapılan hareketleri algılar, elinizin yanlışlıkla kameraya çarpması eylemleri tetiklemez.
 - **Sıfır Gecikme & Gizlilik Odaklı**: Tüm makine öğrenimi süreçleri (MediaPipe WebAssembly ile) bir _Offscreen Document_ (Görünmez Belge) üzerinden lokal olarak çalışır. Hiçbir kamera görüntüsü internetteki bir sunucuya gönderilmez. Maksimum gizlilik!
 - **Akıcı Kullanıcı Arayüzü (UI)**: Hareketleri ne kadar başarılı yaptığınızı ve eylemlerin sonucunu anında gösteren, rahatsız etmeyen, cam (glassmorphism) efektli bir HUD ekrana yansıtılır.
@@ -84,7 +85,7 @@ Bu eklenti Chrome Web Mağazasında olmadığı için Geliştirici Modunu kullan
 En güncel **Manifest V3** standartlarıyla inşa edilen eklenti, üçlü bir mimariye sahiptir:
 
 - **`background.js` (Service Worker)**: Eklentinin beynidir. Kameranın Açık/Kapalı durumunu yönetir ve "Görünmez Sürücü (Offscreen)" belgesini hayatta tutmak için sürekli bir `KEEP_ALIVE` nabzı gönderir.
-- **`offscreen.js` (Görünmez Sürücü)**: Ağır işlerin yapıldığı kısımdır. Kameraya erişir, MediaPipe WebAssembly'i yükler ve yaklaşık ~30 FPS hızda el hareketlerini yüksek doğrulukla, arka planda (tarayıcıyı yormadan) hesaplar.
+- **`offscreen.js` (Görünmez Sürücü)**: Ağır işlerin yapıldığı kısımdır. Kameraya erişir, MediaPipe WebAssembly'i yükler ve ~30 FPS hızda el hareketlerini yüksek doğrulukla arka planda hesaplar. Duruş bozukluklarını (derinlik / uzaklık) ekarte etmek için x ekseni sapmalarını değil doğrudan bilek-parmak arasındaki eksen açısını **(Trigonometri ile)** hesaplayan güncel bir algoritmaya sahiptir.
 - **`content.js` (İçerik Betiği)**: Doğrudan YouTube sayfasının içine yerleşir. Olayları dinler, YouTube'un HTML5 `<video>` elementine müdahale ederek eylemleri yansıtır ve size o şık kullanıcı arayüzünü (Toast, Progress vb.) çizer.
 
 ## 🤝 Katkıda Bulunma
