@@ -7,6 +7,7 @@
 <a href="#özellikler">Özellikler</a> •
 <a href="#kurulum">Kurulum</a> •
 <a href="#hareketler">Hareketler</a> •
+<a href="#kullanım-ve-menü">Kullanım ve Menü</a> •
 <a href="#mimari">Mimari</a>
 
 </div>
@@ -29,13 +30,35 @@ Elleriniz yemekten kirlenmiş de olsa, resim yaparken ya da sadece bir Jedi gibi
 
 ## 🎯 Desteklenen Hareketler
 
-| Hareket                | İkon | Eylem                  | Açıklama                                                                                       |
+| Hareket                | İkon | Varsayılan Eylem       | Açıklama                                                                                       |
 | :--------------------- | :--: | :--------------------- | :--------------------------------------------------------------------------------------------- |
 | **Çimdik (Pinch)**     |  🤏  | **Gerçek Zamanlı Ses** | İşaret ile başparmağınızı birbirine yaklaştırarak sesi kısın ya da uzaklaştırarak açın.        |
 | **Açık El**            |  ✋  | **Oynat / Duraklat**   | Videoyu durdurmak veya oynatmak için düz ve açık bir el gösterin.                              |
 | **Beğeni / Başparmak** |  👍  | **Hızlandır (+0.25x)** | Diğer parmaklarınız kapalıyken başparmağınızı havaya kaldırıp hızı artırın.                    |
 | **Zafer İşareti**      |  ✌️  | **Sesi Kapat / Aç**    | Sesin tamamen kapanmasını ya da açılmasını sağlamak için işaret ve orta parmağınızı "V" yapın. |
 | **Yumruk**             |  ✊  | **Geri Sar (-5sn)**    | Videoyu 5 saniye geriye sarmak için kapalı bir yumruk yapın.                                   |
+
+_(Not: Bu eylemlerin tümü eklenti menüsündeki açılır listeler aracılığıyla kendi zevkinize göre değiştirilebilir)_
+
+## 🎮 Kullanım ve Menü
+
+Eklentiyi yükledikten sonra, Chrome araç çubuğunda el şeklindeki ikonumuza (🖐️) tıklayarak ana menüyü açabilirsiniz. Ana menü son derece anlaşılır ve özelleştirilebilir şekilde tasarlanmıştır:
+
+### Ana Kontrol Anahtarı (Master Switch)
+
+Menünün en üstünde yer alan anahtar, **Kamerayı ve Eklentiyi Aç/Kapat**manızı sağlar.
+
+- **Açık Konum:** Kamera aktifleşir, MediaPipe motoru arkaplanda çalışmaya başlar ve YouTube'da el hareketlerinizi dinlemeye başlar.
+- **Kapalı Konum:** Kamera tamamen kapanır, eklenti tüm donanım serbest bırakır ve işlemci tüketimini **Sıfır'a** indirir.
+
+### Hareket ve Eylem Özelleştirme
+
+Kameranın altındaki listede 5 farklı el hareketini (Açık El, Başparmak, Zafer İşareti, Yumruk, Çimdik) göreceksiniz.
+
+1. **Toggle/Switch Düğmesi:** İlgili hareketi tamamen devre dışı bırakmak veya tekrar açmak için kullanılır. Sevmediğiniz veya kazara kendi kendinize çok yaptığınız bir el hareketi varsa yanındaki düğmeden o hareketi susturabilirsiniz.
+2. **Açılır Menü (Dropdown):** Her hareketin yanındaki açılır menüden, bu hareket yapıldığında YouTube'da hangi işlevin tetikleneceğini seçebilirsiniz. Örneğin "Yumruk" yaptığınızda "İleri Sar" yerine "Duraklat" işlevinin çalışmasını istiyorsanız açılır menüden özgürce ayarlayabilir, kendi favori düzeninizi yaratabilirsiniz.
+
+_Seçtiğiniz tüm ayarlar Chrome belleğine otomatik kaydedilir; sekmeyi veya tarayıcıyı kapatsanız dahi eklenti tercihlerinizi hatırlar._
 
 ## 🚀 Kurulum (Geliştirici Modu)
 
