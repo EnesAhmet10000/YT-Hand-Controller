@@ -16,20 +16,20 @@
 
 ## 🌟 Genel Bakış
 
-**YouTube Hand Control**, bilgisayarınızın web kamerasını kullanarak YouTube videolarında tamamen dokunmatik kontroller (oynatma, duraklatma, ses, ileri-geri sarma, hızlandırma) sağlayan yeni nesil bir Google Chrome eklentisidir. Google'ın son teknoloji **MediaPipe Hands** kütüphanesini kullanarak %100 yerel olarak cihazınızda çalışır, yani herhangi bir bulut sunucusuna görüntü göndermez. Geleceği deneyimlemeye hazır olun.
+**YouTube Hand Control**, bilgisayarınızın kamerasını kullanarak YouTube videolarını bilimkurgu filmlerindeki gibi sadece el hareketlerinizle kontrol etmenizi (oynatma, duraklatma, ses, ileri-geri sarma, hızlandırma vb.) sağlayan yepyeni bir Google Chrome eklentisidir. Arka planda Google'ın **MediaPipe Hands** yapay zeka modelini kullanır. En güzel yanı ne mi? %100 yerel (local) çalışır; yani görüntünüz hiçbir zaman bir bulut sunucusuna gönderilmez!
 
-Elleriniz yemekten kirlenmiş de olsa, resim yaparken ya da sadece bir Jedi gibi hissetmek istediğinizde, bu eklenti video izleme deneyiminize sihirli bir dokunuş katar.
+Elleriniz yemekten kirlenmiş de olsa, resim yaparken fırçayı bırakmak istemeseniz de ya da sadece kendinizi bir Jedi gibi hissetmek istediğinizde, bu eklenti kurtarıcınız olacak. Denedikten sonra klavyeye veya fareye dokunmak istemeyeceksiniz.
 
 ## ✨ Özellikler
 
 - **Çimdikleyerek Ses Kontrolü (Önerilmez)**: İşaret parmağınızı ve başparmağınızı çimdikleyerek sesi dinamik olarak değiştirin. İki parmak arasındaki mesafe, ses seviyesini gerçek zamanlı olarak ayarlar.
 - **Çift El ile Tam Ekran**: Her iki elinizi de kameraya açık bir şekilde göstererek sinematik bir deneyim için videoyu anında tam ekrana alın.
 - **Gelişmiş Yatay Navigasyon**: Elinizi sağa veya sola işaret ederek videoyu 10 saniye ileri veya geri sarın, veya avuç içinizi döndürerek videolar arası kolayca geçiş yapın.
-- **Trigonometrik Kararlılık & Kusursuz Algılama**: Eski nesil "noktalar arası uzunluk (Euclidean)" ölçme sisteminden **Trigonometrik Açı (Math.atan2)** hesaplama altyapısına geçildi. Eller kameraya ne kadar yakın veya uzak olursa olsun; hafif eğik mi, dik mi olduğu milisaniyeler içinde kusursuzca ayrıştırılır. Çakışma veya yanlış algılama imkansız hale getirildi.
-- **Midas Dokunuşu Koruması**: Yerleşik 600ms _Bekleme Süresi (Dwell Time)_ mekanizması sayesinde sistem sadece kasıtlı yapılan hareketleri algılar, elinizin yanlışlıkla kameraya çarpması eylemleri tetiklemez.
-- **Sıfır Gecikme & Gizlilik Odaklı**: Tüm makine öğrenimi süreçleri (MediaPipe WebAssembly ile) bir _Offscreen Document_ (Görünmez Belge) üzerinden lokal olarak çalışır. Hiçbir kamera görüntüsü internetteki bir sunucuya gönderilmez. Maksimum gizlilik!
-- **Akıcı Kullanıcı Arayüzü (UI)**: Hareketleri ne kadar başarılı yaptığınızı ve eylemlerin sonucunu anında gösteren, rahatsız etmeyen, cam (glassmorphism) efektli bir HUD ekrana yansıtılır.
-- **Akıllı Güç Tasarrufu**: Manifest V3 Service Worker teknolojisini kullanarak bataryadan tasarruf eder ve kamerayı yalnızca ihtiyaç duyulduğunda çalıştırır.
+- **Trigonometrik Kararlılık & Kusursuz Algılama**: Eski nesil sistemleri tamamen çöpe attık. Artık elin kameraya olan uzaklığına veya açısına bakmaksızın, parmaklar arasındaki **Trigonometrik Açıyı (Math.atan2)** ve Öklid uzaklığını hesaplayan yepyeni bir "Orta Parmak Kilidi" (Middle Finger Lock) mantığı kurduk. İşaret etme (👉) ve Peace (✌️) gibi hareketler birbirine karışmıyor!
+- **Midas Dokunuşu Koruması**: Yerleşik akıllı bekleme süresi ve özel "Cooldown" algoritmaları sayesinde sistem sadece _kasıtlı_ yapılan hareketlerinizi algılar. Kameranın önünden yanlışlıkla elinizi geçirdiniz diye videolar birbirine girmez.
+- **Sıfır Gecikme & %100 Gizlilik**: Tüm yapay zeka süreçleri bir _Offscreen Document_ (Görünmez Belge) içinde kendi bilgisayarınızın işlemcisiyle çözülür. Kameranız sizi izleyip başkasına veri yollamaz; her şey bilgisayarınızda kalır.
+- **Akıcı ve Çok Dilli Arayüz (I18N)**: YouTube ekranının üzerinde beliren o şık cam efeftli (glassmorphism) HUD bildirimleri, siz hareketleri yaptıkça size anlık tepkiler verir. Üstelik artık **Türkçe, İngilizce ve Arapça (RTL Destekli)**! Menüden dilinizi seçtiğiniz an, YouTube'un üzerindeki bildirimler ve menü harika bir simetriyle dilinize adapte olur.
+- **Akıllı Güç Tasarrufu**: Eklentiyi menüsünden kapattığınız an tüm donanım anında serbest bırakılır ve bilgisayarınızda bir gram bile fazladan CPU harcamaz.
 
 ## 🎯 Desteklenen Hareketler
 
@@ -38,7 +38,8 @@ Elleriniz yemekten kirlenmiş de olsa, resim yaparken ya da sadece bir Jedi gibi
 | **Çift El**            |  👐   | **Tam Ekran**          | İki elinizi açık ve yan yana tutarak videoyu tam ekran moduna geçirin veya çıkın.              |
 | **Çimdik (Önerilmez)** |  🤏   | **Gerçek Zamanlı Ses** | İşaret ile başparmağınızı birbirine yaklaştırarak sesi kısın ya da uzaklaştırarak açın.        |
 | **Açık El**            |  ✋   | **Oynat / Duraklat**   | Videoyu durdurmak veya oynatmak için düz ve açık bir el gösterin.                              |
-| **İşaret Yukarı**      |  ☝️   | **Sesi Kapat / Aç**    | Sadece işaret parmağınızı havaya kaldırarak sesi tamamen kapatıp açın.                         |
+| **İşaret Yukarı**      |  ☝️   | **Sesi %5 Artır**      | Sadece işaret parmağınızı havaya kaldırarak videonun sesini azar azar yükseltin.               |
+| **Vulcan**             |  🖖   | **Sesi %5 Azalt**      | Meşhur Uzay Yolu (Spock) selamını vererek sesi azar azar kısın.                                |
 | **Sağ / Sol Avuç**     | 🫱/🫲 | **Hızlandır/Yavaşlat** | Avuç içinizi yana çevirerek videonun oynatma hızını ±0.25 oranında artırıp azaltın.            |
 | **Sağa / Sola İşaret** | 👉/👈 | **10 Sn İleri/Geri**   | İşaret parmağınızla yön belirterek videoyu hızlıca 10 saniye atlatın.                          |
 | **Zafer İşareti**      |  ✌️   | **Sesi Kapat / Aç**    | Sesin tamamen kapanmasını ya da açılmasını sağlamak için işaret ve orta parmağınızı "V" yapın. |
