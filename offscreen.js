@@ -41,7 +41,19 @@
   const euclidean = (a, b) =>
     Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2 + (a.z - b.z) ** 2);
 
+  function getHandAngle(lm) {
+    // Bilek (0) ile orta parmak kökü (9) arasındaki açıyı hesapla. Üst: -90, Sağ: 0, Sol: -180/180
+    const dy = lm[9].y - lm[0].y;
+    const dx = lm[9].x - lm[0].x;
+    return Math.atan2(dy, dx) * (180 / Math.PI);
+  }
+
   function isOpenPalm(lm) {
+    const angle = getHandAngle(lm);
+    // Elin dikey (yukarı yönlü) durma açısı: -135 ile -45 derece arası olmalı
+    if (angle < -135 || angle > -45) return false;
+
+    // Parmakların Y ekseninde yukarı doğru açık olup olmadığını kontrol et
     return lm[8].y < lm[6].y && lm[12].y < lm[10].y &&
            lm[16].y < lm[14].y && lm[20].y < lm[18].y;
   }
@@ -78,13 +90,23 @@
   }
 
   function isPalmRight(lm) {
-    const fingersRight = lm[8].x > lm[5].x && lm[12].x > lm[9].x && lm[16].x > lm[13].x;
-    return fingersRight && Math.abs(lm[12].y - lm[0].y) < 0.15;
+    const angle = getHandAngle(lm);
+    // Elin sağa doğru durma açısı: -45 ile +45 derece arası
+    if (angle < -45 || angle > 45) return false;
+
+    // Parmakların yatay eksende sağa durup durmadığını kontrol et
+    return lm[8].x > lm[6].x && lm[12].x > lm[10].x &&
+           lm[16].x > lm[14].x && lm[20].x > lm[18].x;
   }
 
   function isPalmLeft(lm) {
-    const fingersLeft = lm[8].x < lm[5].x && lm[12].x < lm[9].x && lm[16].x < lm[13].x;
-    return fingersLeft && Math.abs(lm[12].y - lm[0].y) < 0.15;
+    const angle = getHandAngle(lm);
+    // Elin sola doğru durma açısı: 135'ten büyük veya -135'ten küçük
+    if (angle > -135 && angle < 135) return false;
+
+    // Parmakların yatay eksende sola durup durmadığını kontrol et
+    return lm[8].x < lm[6].x && lm[12].x < lm[10].x &&
+           lm[16].x < lm[14].x && lm[20].x < lm[18].x;
   }
 
   function isPeaceSign(lm) {
@@ -266,20 +288,26 @@
     // Pinch (Continuous)
     const pinchSetting = gestureSettings[PINCH_CONFIG.key];
     if (pinchSetting && pinchSetting.enabled) {
-      const pinchDist = getPinchDistance(landmarks);
-      if (pinchDist < PINCH_CONFIG.maxDist) {
-        const { minDist, maxDist } = PINCH_CONFIG;
-        const clamped = Math.max(minDist, Math.min(maxDist, pinchDist));
-        const volume  = (clamped - minDist) / (maxDist - minDist);
-        sendMsg({
-          type: 'GESTURE_ACTION',
-          action: pinchSetting.action,
-          volume,
-          icon: PINCH_CONFIG.icon,
-          gestureName: PINCH_CONFIG.name,
-        });
-        resetDwell();
-        return;
+      const isPinchShape = landmarks[12].y > landmarks[10].y && 
+                           landmarks[16].y > landmarks[14].y && 
+                           landmarks[20].y > landmarks[18].y;
+
+      if (isPinchShape && results.multiHandLandmarks.length === 1) {
+        const pinchDist = getPinchDistance(landmarks);
+        if (pinchDist < PINCH_CONFIG.maxDist) {
+          const { minDist, maxDist } = PINCH_CONFIG;
+          const clamped = Math.max(minDist, Math.min(maxDist, pinchDist));
+          const volume  = (clamped - minDist) / (maxDist - minDist);
+          sendMsg({
+            type: 'GESTURE_ACTION',
+            action: pinchSetting.action,
+            volume,
+            icon: PINCH_CONFIG.icon,
+            gestureName: PINCH_CONFIG.name,
+          });
+          resetDwell();
+          return;
+        }
       }
     }
 
