@@ -2,71 +2,70 @@
   <img src="icons/icon128.png" alt="YT Hand Control Logo" width="128" />
   <h1>🖐️ YouTube Hand Control</h1>
   
-  <p>Control YouTube playback with a wave of your hand, powered by <b>MediaPipe</b> and <b>Computer Vision</b>.</p>
+  <p><b>MediaPipe</b> ve <b>Bilgisayarlı Görü</b> teknolojileri ile YouTube video oynatımını sadece el sallayarak kontrol edin.</p>
 
-<a href="#features">Features</a> •
-<a href="#installation">Installation</a> •
-<a href="#gestures">Gestures</a> •
-<a href="#architecture">Architecture</a>
+<a href="#özellikler">Özellikler</a> •
+<a href="#kurulum">Kurulum</a> •
+<a href="#hareketler">Hareketler</a> •
+<a href="#mimari">Mimari</a>
 
 </div>
 
 ---
 
-## 🌟 Overview
+## 🌟 Genel Bakış
 
-**YouTube Hand Control** is a next-generation Google Chrome extension that allows you to control YouTube video playback, volume, speed, and seeking entirely hands-free. Using Google's state-of-the-art **MediaPipe Hands** library running completely locally on your machine, it processes your webcam feed in real-time, matching your hand movements to playback controls.
+**YouTube Hand Control**, bilgisayarınızın web kamerasını kullanarak YouTube videolarında tamamen dokunmatik kontroller (oynatma, duraklatma, ses, ileri-geri sarma, hızlandırma) sağlayan yeni nesil bir Google Chrome eklentisidir. Google'ın son teknoloji **MediaPipe Hands** kütüphanesini kullanarak %100 yerel olarak cihazınızda çalışır, yani herhangi bir bulut sunucusuna görüntü göndermez. Geleceği deneyimlemeye hazır olun.
 
-Whether your hands are dirty from eating, covered in paint, or you simply want to feel like a Jedi, this extension brings magic to your video viewing experience.
+Elleriniz yemekten kirlenmiş de olsa, resim yaparken ya da sadece bir Jedi gibi hissetmek istediğinizde, bu eklenti video izleme deneyiminize sihirli bir dokunuş katar.
 
-## ✨ Features
+## ✨ Özellikler
 
-- **Pinch-to-Volume**: Dynamically change the volume by pinching your index finger and thumb. The distance controls the volume level in real-time.
-- **Midas Touch Defense**: A built-in 600ms _Dwell Time_ mechanism guarantees you don't accidentally pause or speed up the video when moving your hand naturally.
-- **Zero Latency & Privacy First**: All machine learning processing (using MediaPipe WebAssembly) runs 100% locally through an _Offscreen Document_. No video feeds are sent to any server.
-- **Ultra-Smooth UI Engine**: Injects a glassy, non-obtrusive dynamic overlay right onto the YouTube player to provide clear visual feedback of the gestures you make.
-- **Smart Power Sleep**: Operates intelligently using Manifest V3 Service Workers to preserve battery and only spin up the camera when absolutely needed.
+- **Çimdikleyerek Ses Kontrolü**: İşaret parmağınızı ve başparmağınızı çimdikleyerek sesi dinamik olarak değiştirin. İki parmak arasındaki mesafe, ses seviyesini gerçek zamanlı olarak ayarlar.
+- **Midas Dokunuşu Koruması**: Yerleşik 600ms _Bekleme Süresi (Dwell Time)_ mekanizması sayesinde sistem sadece kasıtlı yapılan hareketleri algılar, elinizin yanlışlıkla kameraya çarpması eylemleri tetiklemez.
+- **Sıfır Gecikme & Gizlilik Odaklı**: Tüm makine öğrenimi süreçleri (MediaPipe WebAssembly ile) bir _Offscreen Document_ (Görünmez Belge) üzerinden lokal olarak çalışır. Hiçbir kamera görüntüsü internetteki bir sunucuya gönderilmez. Maksimum gizlilik!
+- **Akıcı Kullanıcı Arayüzü (UI)**: Hareketleri ne kadar başarılı yaptığınızı ve eylemlerin sonucunu anında gösteren, rahatsız etmeyen, cam (glassmorphism) efektli bir HUD ekrana yansıtılır.
+- **Akıllı Güç Tasarrufu**: Manifest V3 Service Worker teknolojisini kullanarak bataryadan tasarruf eder ve kamerayı yalnızca ihtiyaç duyulduğunda çalıştırır.
 
-## 🎯 Supported Gestures
+## 🎯 Desteklenen Hareketler
 
-| Gesture        | Icon | Action                  | Description                                                 |
-| :------------- | :--: | :---------------------- | :---------------------------------------------------------- |
-| **Pinch**      |  🤏  | **Continuous Volume**   | Hold index and thumb close to adjust volume smoothly.       |
-| **Open Palm**  |  ✋  | **Play / Pause**        | Hold a flat open palm to toggle video playback.             |
-| **Thumbs Up**  |  👍  | **Speed Up (+0.25x)**   | Point thumb up with other fingers closed to increase speed. |
-| **Peace Sign** |  ✌️  | **Mute / Unmute**       | Hold up your index and middle fingers to toggle mute.       |
-| **Fist**       |  ✊  | **Seek Backward (-5s)** | Show a closed fist to rewind the video by 5 seconds.        |
+| Hareket                | İkon | Eylem                  | Açıklama                                                                                       |
+| :--------------------- | :--: | :--------------------- | :--------------------------------------------------------------------------------------------- |
+| **Çimdik (Pinch)**     |  🤏  | **Gerçek Zamanlı Ses** | İşaret ile başparmağınızı birbirine yaklaştırarak sesi kısın ya da uzaklaştırarak açın.        |
+| **Açık El**            |  ✋  | **Oynat / Duraklat**   | Videoyu durdurmak veya oynatmak için düz ve açık bir el gösterin.                              |
+| **Beğeni / Başparmak** |  👍  | **Hızlandır (+0.25x)** | Diğer parmaklarınız kapalıyken başparmağınızı havaya kaldırıp hızı artırın.                    |
+| **Zafer İşareti**      |  ✌️  | **Sesi Kapat / Aç**    | Sesin tamamen kapanmasını ya da açılmasını sağlamak için işaret ve orta parmağınızı "V" yapın. |
+| **Yumruk**             |  ✊  | **Geri Sar (-5sn)**    | Videoyu 5 saniye geriye sarmak için kapalı bir yumruk yapın.                                   |
 
-## 🚀 Installation (Developer Mode)
+## 🚀 Kurulum (Geliştirici Modu)
 
-Since this extension is in active development, you can load it directly into Chrome using Developer Mode.
+Bu eklenti Chrome Web Mağazasında olmadığı için Geliştirici Modunu kullanarak saniyeler içinde Chrome'a yükleyebilirsiniz.
 
-1. Clone this repository:
+1. Projeyi bilgisayarınıza indirin (Clone):
    ```bash
-   git clone https://github.com/your-username/yt-hand-control.git
+   git clone https://github.com/EnesAhmet10000/YT-Hand-Controller.git
    ```
-2. Open Google Chrome and navigate to `chrome://extensions/`.
-3. Enable **Developer mode** using the toggle switch in the top right corner.
-4. Click the **Load unpacked** button.
-5. Select the cloned `yt-hand-control` directory.
-6. The extension is now installed! You can pin it to your toolbar for easy access.
+2. Google Chrome'u açın ve adres çubuğuna `chrome://extensions/` yazın.
+3. Sağ üst köşedeki **Geliştirici Modu (Developer mode)** butonunu aktif hale getirin.
+4. Sol üstteki **Paketlenmemiş öğe yükle (Load unpacked)** düğmesine tıklayın.
+5. Klasörü indirdiğiniz `YT-Hand-Controller` dizinini seçin.
+6. Eklentiniz artık kuruldu! Dilerseniz adres çubuğunun yanındaki yapboz (🧩) simgesinden eklentiyi sabitleyebilirsiniz.
 
-## ⚙️ How It Works (Architecture)
+## ⚙️ Nasıl Çalışıyor? (Mimari)
 
-Built on the latest **Manifest V3** standard, the extension utilizes a tripartite architecture:
+En güncel **Manifest V3** standartlarıyla inşa edilen eklenti, üçlü bir mimariye sahiptir:
 
-- **`background.js` (Service Worker)**: Acts as the central hub, managing the camera state and ensuring the Offscreen Document stays alive with a `KEEP_ALIVE` heartbeat.
-- **`offscreen.js` (Offscreen Document)**: The heavy-lifting engine. Captures the camera stream, loads the MediaPipe WebAssembly library, and runs the complex landmark math asynchronously at ~30 FPS for silky-smooth tracking.
-- **`content.js` (Content Script)**: Injected directly into YouTube. Listens for validated gesture commands from the Offscreen Document and manipulates the HTML5 `<video>` target, rendering the custom glass-morphism overlay.
+- **`background.js` (Service Worker)**: Eklentinin beynidir. Kameranın Açık/Kapalı durumunu yönetir ve "Görünmez Sürücü (Offscreen)" belgesini hayatta tutmak için sürekli bir `KEEP_ALIVE` nabzı gönderir.
+- **`offscreen.js` (Görünmez Sürücü)**: Ağır işlerin yapıldığı kısımdır. Kameraya erişir, MediaPipe WebAssembly'i yükler ve yaklaşık ~30 FPS hızda el hareketlerini yüksek doğrulukla, arka planda (tarayıcıyı yormadan) hesaplar.
+- **`content.js` (İçerik Betiği)**: Doğrudan YouTube sayfasının içine yerleşir. Olayları dinler, YouTube'un HTML5 `<video>` elementine müdahale ederek eylemleri yansıtır ve size o şık kullanıcı arayüzünü (Toast, Progress vb.) çizer.
 
-## 🤝 Contributing
+## 🤝 Katkıda Bulunma
 
-Contributions, issues, and feature requests are welcome!
-Feel free to check [issues page](https://github.com/your-username/yt-hand-control/issues).
+Projeyi geliştirmeye, hataları (issues) bildirmeye veya yeni özellikler eklemeye sonuna kadar açığız. Bir yıldız (⭐️) vermeyi unutmayın!
 
 ---
 
 <div align="center">
-  <i>"A touchless future for your multimedia."</i>
+  <i>"Multimedya için dokunmasız bir gelecek."</i>
 </div>
 # YT-Hand-Controller
