@@ -46,10 +46,45 @@
            lm[16].y < lm[14].y && lm[20].y < lm[18].y;
   }
 
-  function isThumbsUp(lm) {
-    const fourCurled = lm[8].y > lm[6].y && lm[12].y > lm[10].y &&
-                       lm[16].y > lm[14].y && lm[20].y > lm[18].y;
-    return fourCurled && lm[4].y < lm[3].y;
+  function isBothHandsOpen(lm, results) {
+    if (!results || !results.multiHandLandmarks || results.multiHandLandmarks.length !== 2) return false;
+    const lm1 = results.multiHandLandmarks[0];
+    const lm2 = results.multiHandLandmarks[1];
+    return isOpenPalm(lm1) && isOpenPalm(lm2);
+  }
+
+  function isPointingRight(lm) {
+    const isHorizontal = Math.abs(lm[8].y - lm[5].y) < 0.1;
+    const isRight = lm[8].x > (lm[5].x + 0.08);
+    const othersClosed = lm[12].y > lm[10].y && lm[16].y > lm[14].y && lm[20].y > lm[18].y;
+    return isHorizontal && isRight && othersClosed;
+  }
+
+  function isPointingLeft(lm) {
+    const isHorizontal = Math.abs(lm[8].y - lm[5].y) < 0.1;
+    const isLeft = lm[8].x < (lm[5].x - 0.08);
+    const othersClosed = lm[12].y > lm[10].y && lm[16].y > lm[14].y && lm[20].y > lm[18].y;
+    return isHorizontal && isLeft && othersClosed;
+  }
+
+  function isIndexUp(lm) {
+    const indexOpen = lm[8].y < lm[6].y;
+    const othersClosed = lm[12].y > lm[10].y && lm[16].y > lm[14].y && lm[20].y > lm[18].y;
+    return indexOpen && othersClosed;
+  }
+
+  function getPinchDistance(lm) {
+    return euclidean(lm[4], lm[8]);
+  }
+
+  function isPalmRight(lm) {
+    const fingersRight = lm[8].x > lm[5].x && lm[12].x > lm[9].x && lm[16].x > lm[13].x;
+    return fingersRight && Math.abs(lm[12].y - lm[0].y) < 0.15;
+  }
+
+  function isPalmLeft(lm) {
+    const fingersLeft = lm[8].x < lm[5].x && lm[12].x < lm[9].x && lm[16].x < lm[13].x;
+    return fingersLeft && Math.abs(lm[12].y - lm[0].y) < 0.15;
   }
 
   function isPeaceSign(lm) {
@@ -63,20 +98,21 @@
            lm[16].y > lm[14].y && lm[20].y > lm[18].y;
   }
 
-  function getPinchDistance(lm) {
-    return euclidean(lm[4], lm[8]);
-  }
-
 
   // ═══════════════════════════════════════════════════════════════════════════
   //  B. GESTURE TABLE
   // ═══════════════════════════════════════════════════════════════════════════
 
   const GESTURE_TABLE = [
-    { key: 'open_palm',  recognize: isOpenPalm,  icon: '✋', name: 'Open_Palm'  },
-    { key: 'thumbs_up',  recognize: isThumbsUp,  icon: '👍', name: 'Thumbs_Up'  },
-    { key: 'peace_sign', recognize: isPeaceSign, icon: '✌️', name: 'Peace_Sign' },
-    { key: 'fist',       recognize: isFist,      icon: '✊', name: 'Fist'       },
+    { key: 'both_hands_open',recognize: isBothHandsOpen, icon: '👐', name: 'Both_Hands'     },
+    { key: 'open_palm',      recognize: isOpenPalm,      icon: '✋', name: 'Open_Palm'      },
+    { key: 'index_up',       recognize: isIndexUp,       icon: '☝️', name: 'Index_Up'       },
+    { key: 'palm_right',     recognize: isPalmRight,     icon: '🫱', name: 'Palm_Right'     },
+    { key: 'palm_left',      recognize: isPalmLeft,      icon: '🫲', name: 'Palm_Left'      },
+    { key: 'pointing_right', recognize: isPointingRight, icon: '👉', name: 'Pointing_Right' },
+    { key: 'pointing_left',  recognize: isPointingLeft,  icon: '👈', name: 'Pointing_Left'  },
+    { key: 'peace_sign',     recognize: isPeaceSign,     icon: '✌️', name: 'Peace_Sign'     },
+    { key: 'fist',           recognize: isFist,          icon: '✊', name: 'Fist'           },
   ];
 
   const PINCH_CONFIG = {
@@ -90,11 +126,16 @@
   // ═══════════════════════════════════════════════════════════════════════════
 
   const DEFAULT_SETTINGS = {
-    open_palm:  { enabled: true, action: 'togglePlay'    },
-    thumbs_up:  { enabled: true, action: 'speedUp'       },
-    peace_sign: { enabled: true, action: 'toggleMute'    },
-    fist:       { enabled: true, action: 'seekBackward'  },
-    pinch:      { enabled: true, action: 'volumeControl' },
+    both_hands_open:{ enabled: true, action: 'toggleFullscreen'},
+    open_palm:      { enabled: true, action: 'togglePlay'    },
+    index_up:       { enabled: true, action: 'toggleMute'    },
+    palm_right:     { enabled: true, action: 'nextVideo'     },
+    palm_left:      { enabled: true, action: 'previousVideo' },
+    pointing_right: { enabled: true, action: 'seekForward10' },
+    pointing_left:  { enabled: true, action: 'seekBackward10'},
+    peace_sign:     { enabled: true, action: 'toggleMute'    },
+    fist:           { enabled: true, action: 'seekBackward'  },
+    pinch:          { enabled: true, action: 'volumeControl' },
   };
 
   let gestureSettings = { ...DEFAULT_SETTINGS };
@@ -184,7 +225,7 @@
       });
 
       handsInstance.setOptions({
-        maxNumHands: 1,
+        maxNumHands: 2,
         modelComplexity: 0,
         minDetectionConfidence: 0.5,
         minTrackingConfidence: 0.5,
@@ -247,7 +288,7 @@
     for (const gesture of GESTURE_TABLE) {
       const setting = gestureSettings[gesture.key];
       if (!setting || !setting.enabled) continue;
-      if (gesture.recognize(landmarks)) {
+      if (gesture.recognize(landmarks, results)) {
         handleDiscreteGesture(gesture, setting);
         matched = true;
         break;

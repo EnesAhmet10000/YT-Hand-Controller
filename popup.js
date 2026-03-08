@@ -9,29 +9,44 @@
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
 const GESTURES = [
-  { key: 'open_palm',  icon: '✋', name: 'Açık El'    },
-  { key: 'thumbs_up',  icon: '👍', name: 'Başparmak ↑' },
-  { key: 'peace_sign', icon: '✌️', name: 'Zafer'      },
-  { key: 'fist',       icon: '✊', name: 'Yumruk'     },
-  { key: 'pinch',      icon: '🤏', name: 'Çimdik'     },
+  { key: 'both_hands_open',icon: '👐', name: 'Çift El'      },
+  { key: 'open_palm',      icon: '✋', name: 'Açık El'      },
+  { key: 'index_up',       icon: '☝️', name: 'İşaret Yukarı' },
+  { key: 'palm_right',     icon: '🫱', name: 'Sağ Avuç'      },
+  { key: 'palm_left',      icon: '🫲', name: 'Sol Avuç'      },
+  { key: 'pointing_right', icon: '👉', name: 'Sağa İşaret'   },
+  { key: 'pointing_left',  icon: '👈', name: 'Sola İşaret'   },
+  { key: 'peace_sign',     icon: '✌️', name: 'Zafer'        },
+  { key: 'fist',           icon: '✊', name: 'Yumruk'       },
+  { key: 'pinch',          icon: '🤏', name: 'Çimdik'       },
 ];
 
 const ACTIONS = [
-  { value: 'togglePlay',  label: 'Oynat / Durdur' },
-  { value: 'speedUp',     label: 'Hız +0.25'      },
-  { value: 'speedDown',   label: 'Hız −0.25'      },
-  { value: 'toggleMute',  label: 'Sessize Al/Aç'  },
-  { value: 'seekForward', label: '5 Sn İleri'      },
-  { value: 'seekBackward',label: '5 Sn Geri'       },
-  { value: 'volumeControl', label: 'Ses Seviyesi'  },
+  { value: 'togglePlay',     label: 'Oynat / Durdur' },
+  { value: 'toggleFullscreen',label: 'Tam Ekran'     },
+  { value: 'speedUp',        label: 'Hız +0.25'      },
+  { value: 'speedDown',      label: 'Hız −0.25'      },
+  { value: 'toggleMute',     label: 'Sessize Al/Aç'  },
+  { value: 'seekForward',    label: '5 Sn İleri'      },
+  { value: 'seekBackward',   label: '5 Sn Geri'       },
+  { value: 'seekForward10',  label: '10 Sn İleri'     },
+  { value: 'seekBackward10', label: '10 Sn Geri'      },
+  { value: 'nextVideo',      label: 'Sonraki Video'   },
+  { value: 'previousVideo',  label: 'Önceki Video'    },
+  { value: 'volumeControl',  label: 'Ses Seviyesi'  },
 ];
 
 const DEFAULT_SETTINGS = {
-  open_palm:  { enabled: true, action: 'togglePlay'    },
-  thumbs_up:  { enabled: true, action: 'speedUp'       },
-  peace_sign: { enabled: true, action: 'toggleMute'    },
-  fist:       { enabled: true, action: 'seekBackward'  },
-  pinch:      { enabled: true, action: 'volumeControl' },
+  both_hands_open:{ enabled: true, action: 'toggleFullscreen'},
+  open_palm:      { enabled: true, action: 'togglePlay'    },
+  index_up:       { enabled: true, action: 'toggleMute'    },
+  palm_right:     { enabled: true, action: 'nextVideo'     },
+  palm_left:      { enabled: true, action: 'previousVideo' },
+  pointing_right: { enabled: true, action: 'seekForward10' },
+  pointing_left:  { enabled: true, action: 'seekBackward10'},
+  peace_sign:     { enabled: true, action: 'toggleMute'    },
+  fist:           { enabled: true, action: 'seekBackward'  },
+  pinch:          { enabled: true, action: 'volumeControl' },
 };
 
 

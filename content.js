@@ -53,6 +53,39 @@
       video.currentTime = Math.max(video.currentTime - 5, 0);
       return '⏪ 5 Sn Geri';
     },
+    seekForward10: (video) => {
+      video.currentTime = Math.min(video.currentTime + 10, video.duration);
+      return '⏩ +10s';
+    },
+    seekBackward10: (video) => {
+      video.currentTime = Math.max(video.currentTime - 10, 0);
+      return '⏪ -10s';
+    },
+    nextVideo: (video) => {
+      const nextBtn = document.querySelector('.ytp-next-button');
+      if (nextBtn) nextBtn.click();
+      return '⏭ Sonraki Video';
+    },
+    previousVideo: (video) => {
+      const prevBtn = document.querySelector('.ytp-prev-button');
+      if (prevBtn && prevBtn.style.display !== 'none') {
+        prevBtn.click();
+      } else {
+        window.history.back();
+      }
+      return '⏮ Önceki Video';
+    },
+    toggleFullscreen: (video) => {
+      if (!document.fullscreenElement) {
+        video.requestFullscreen().catch(err => {
+          document.querySelector('.ytp-fullscreen-button')?.click();
+        });
+        return '📺 Tam Ekran Modu';
+      } else {
+        document.exitFullscreen();
+        return '📺 Tam Ekrandan Çıkıldı';
+      }
+    },
     volumeControl: (video, data) => {
       if (data && data.volume !== undefined) {
         video.volume = data.volume;
