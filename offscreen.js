@@ -70,17 +70,27 @@
   }
 
   function isPointingRight(lm) {
-    const isHorizontal = Math.abs(lm[8].y - lm[5].y) < 0.1;
-    const isRight = lm[8].x > (lm[5].x + 0.08);
-    const othersClosed = lm[12].y > lm[10].y && lm[16].y > lm[14].y && lm[20].y > lm[18].y;
-    return isHorizontal && isRight && othersClosed;
+    // İşaret parmağı (8), X ekseninde kendi kökünden (5) tam olarak 0.08 birim sağa taşmalı
+    const isRight = lm[8].x > (lm[5].x + 0.08); 
+    
+    // El yana doğru yattığı için Y eksenli (y > y) kapalı kontrolü çalışmaz!
+    // Bunun yerine: Parmak ucu (12) bileğe (0), orta ekleminden (10) daha yakınsa = Kesin kapalıdır.
+    const isMiddleClosed = euclidean(lm[12], lm[0]) < euclidean(lm[10], lm[0]);
+    const isRingClosed   = euclidean(lm[16], lm[0]) < euclidean(lm[14], lm[0]);
+    const isPinkyClosed  = euclidean(lm[20], lm[0]) < euclidean(lm[18], lm[0]);
+
+    return isRight && isMiddleClosed && isRingClosed && isPinkyClosed;
   }
 
   function isPointingLeft(lm) {
-    const isHorizontal = Math.abs(lm[8].y - lm[5].y) < 0.1;
+    // İşaret parmağı (8), X ekseninde kendi kökünden (5) tam olarak 0.08 birim sola taşmalı
     const isLeft = lm[8].x < (lm[5].x - 0.08);
-    const othersClosed = lm[12].y > lm[10].y && lm[16].y > lm[14].y && lm[20].y > lm[18].y;
-    return isHorizontal && isLeft && othersClosed;
+    
+    const isMiddleClosed = euclidean(lm[12], lm[0]) < euclidean(lm[10], lm[0]);
+    const isRingClosed   = euclidean(lm[16], lm[0]) < euclidean(lm[14], lm[0]);
+    const isPinkyClosed  = euclidean(lm[20], lm[0]) < euclidean(lm[18], lm[0]);
+
+    return isLeft && isMiddleClosed && isRingClosed && isPinkyClosed;
   }
 
   function isIndexUp(lm) {
@@ -125,7 +135,9 @@
   }
 
   function isPeaceSign(lm) {
+    // Hem İşaret (8) hem de Orta (12) KESİN açık olmalı. Orta parmak kapalıysa ASLA Peace Sign olamaz.
     const mainOpen = lm[8].y < lm[6].y && lm[12].y < lm[10].y;
+    // Yüzük (16) ve Serçe (20) KESİN kapalı olmalı
     const othersClosed = lm[16].y > lm[14].y && lm[20].y > lm[18].y;
     return mainOpen && othersClosed;
   }
@@ -340,14 +352,15 @@
       return false;
     };
 
+    // Hiyerarşik Eşleşme: "Orta Parmak Kilidi" prensibiyle Peace(V) mutlaka Pointing(👉/👈) öncesinde sorgulanmalı.
     if (processGesture('both_hands_open', isBothHandsOpen)) { /* matched */ }
     else if (processGesture('vulcan', isVulcan)) { /* matched */ }
-    else if (processGesture('peace_sign', isPeaceSign)) { /* matched */ }
+    else if (processGesture('peace_sign', isPeaceSign)) { /* matched */ } // Orta parmak kapalıysa burayı atlar
     else if (processGesture('index_up', isIndexUp)) { /* matched */ }
+    else if (processGesture('pointing_right', isPointingRight)) { /* matched */ } // İşaret var, Orta/Yüzük/Serçe kapalı
+    else if (processGesture('pointing_left', isPointingLeft)) { /* matched */ }
     else if (processGesture('palm_right', isPalmRight)) { /* matched */ }
     else if (processGesture('palm_left', isPalmLeft)) { /* matched */ }
-    else if (processGesture('pointing_right', isPointingRight)) { /* matched */ }
-    else if (processGesture('pointing_left', isPointingLeft)) { /* matched */ }
     else if (processGesture('open_palm', isOpenPalm)) { /* matched */ }
 
     if (!matched) resetDwell();
