@@ -17,7 +17,6 @@ const GESTURES = [
   { key: 'pointing_right', icon: '👉', name: 'Sağa İşaret'   },
   { key: 'pointing_left',  icon: '👈', name: 'Sola İşaret'   },
   { key: 'peace_sign',     icon: '✌️', name: 'Zafer'        },
-  { key: 'fist',           icon: '✊', name: 'Yumruk'       },
   { key: 'pinch',          icon: '🤏', name: 'Çimdik'       },
 ];
 
@@ -40,12 +39,11 @@ const DEFAULT_SETTINGS = {
   both_hands_open:{ enabled: true, action: 'toggleFullscreen'},
   open_palm:      { enabled: true, action: 'togglePlay'    },
   index_up:       { enabled: true, action: 'toggleMute'    },
-  palm_right:     { enabled: true, action: 'nextVideo'     },
-  palm_left:      { enabled: true, action: 'previousVideo' },
+  palm_right:     { enabled: true, action: 'speedUp'       },
+  palm_left:      { enabled: true, action: 'speedDown'     },
   pointing_right: { enabled: true, action: 'seekForward10' },
   pointing_left:  { enabled: true, action: 'seekBackward10'},
   peace_sign:     { enabled: true, action: 'toggleMute'    },
-  fist:           { enabled: true, action: 'seekBackward'  },
   pinch:          { enabled: true, action: 'volumeControl' },
 };
 

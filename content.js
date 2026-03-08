@@ -76,15 +76,13 @@
       return '⏮ Önceki Video';
     },
     toggleFullscreen: (video) => {
-      if (!document.fullscreenElement) {
-        video.requestFullscreen().catch(err => {
-          document.querySelector('.ytp-fullscreen-button')?.click();
-        });
-        return '📺 Tam Ekran Modu';
-      } else {
-        document.exitFullscreen();
-        return '📺 Tam Ekrandan Çıkıldı';
+      const fullScreenBtn = document.querySelector('.ytp-fullscreen-button');
+      if (fullScreenBtn) {
+        fullScreenBtn.click(); // YouTube'un kendi butonuna basmak en güvenli yoldur.
+        const isNowFull = fullScreenBtn.getAttribute('title')?.includes('Çık') || document.fullscreenElement;
+        return isNowFull ? "📺 Tam Ekran" : "📱 Normal Ekran";
       }
+      return null;
     },
     volumeControl: (video, data) => {
       if (data && data.volume !== undefined) {

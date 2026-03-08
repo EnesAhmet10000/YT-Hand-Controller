@@ -39,10 +39,9 @@ Elleriniz yemekten kirlenmiş de olsa, resim yaparken ya da sadece bir Jedi gibi
 | **Çimdik (Pinch)**     |  🤏   | **Gerçek Zamanlı Ses** | İşaret ile başparmağınızı birbirine yaklaştırarak sesi kısın ya da uzaklaştırarak açın.        |
 | **Açık El**            |  ✋   | **Oynat / Duraklat**   | Videoyu durdurmak veya oynatmak için düz ve açık bir el gösterin.                              |
 | **İşaret Yukarı**      |  ☝️   | **Sesi Kapat / Aç**    | Sadece işaret parmağınızı havaya kaldırarak sesi tamamen kapatıp açın.                         |
-| **Sağ / Sol Avuç**     | 🫱/🫲 | **Sonraki/Önceki V.**  | Avuç içinizi yana çevirerek YouTube algoritmasında veya çalma listesinde gezin.                |
+| **Sağ / Sol Avuç**     | 🫱/🫲 | **Hızlandır/Yavaşlat** | Avuç içinizi yana çevirerek videonun oynatma hızını ±0.25 oranında artırıp azaltın.            |
 | **Sağa / Sola İşaret** | 👉/👈 | **10 Sn İleri/Geri**   | İşaret parmağınızla yön belirterek videoyu hızlıca 10 saniye atlatın.                          |
 | **Zafer İşareti**      |  ✌️   | **Sesi Kapat / Aç**    | Sesin tamamen kapanmasını ya da açılmasını sağlamak için işaret ve orta parmağınızı "V" yapın. |
-| **Yumruk**             |  ✊   | **Geri Sar (-5sn)**    | Videoyu 5 saniye geriye sarmak için kapalı bir yumruk yapın.                                   |
 
 _(Not: Bu eylemlerin tümü eklenti menüsündeki açılır listeler aracılığıyla kendi zevkinize göre değiştirilebilir)_
 

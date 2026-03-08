@@ -59,9 +59,13 @@
   }
 
   function isBothHandsOpen(lm, results) {
+    // Ekranda aynı kare (frame) içinde tam 2 el algılandığından emin ol
     if (!results || !results.multiHandLandmarks || results.multiHandLandmarks.length !== 2) return false;
+    
     const lm1 = results.multiHandLandmarks[0];
     const lm2 = results.multiHandLandmarks[1];
+    
+    // İki elin de koordinatlarının Açık El (isOpenPalm) şartını sağladığını kontrol et
     return isOpenPalm(lm1) && isOpenPalm(lm2);
   }
 
@@ -115,11 +119,6 @@
     return mainOpen && othersClosed;
   }
 
-  function isFist(lm) {
-    return lm[8].y > lm[6].y && lm[12].y > lm[10].y &&
-           lm[16].y > lm[14].y && lm[20].y > lm[18].y;
-  }
-
 
   // ═══════════════════════════════════════════════════════════════════════════
   //  B. GESTURE TABLE
@@ -134,7 +133,6 @@
     { key: 'pointing_right', recognize: isPointingRight, icon: '👉', name: 'Pointing_Right' },
     { key: 'pointing_left',  recognize: isPointingLeft,  icon: '👈', name: 'Pointing_Left'  },
     { key: 'peace_sign',     recognize: isPeaceSign,     icon: '✌️', name: 'Peace_Sign'     },
-    { key: 'fist',           recognize: isFist,          icon: '✊', name: 'Fist'           },
   ];
 
   const PINCH_CONFIG = {
@@ -151,12 +149,11 @@
     both_hands_open:{ enabled: true, action: 'toggleFullscreen'},
     open_palm:      { enabled: true, action: 'togglePlay'    },
     index_up:       { enabled: true, action: 'toggleMute'    },
-    palm_right:     { enabled: true, action: 'nextVideo'     },
-    palm_left:      { enabled: true, action: 'previousVideo' },
+    palm_right:     { enabled: true, action: 'speedUp'       },
+    palm_left:      { enabled: true, action: 'speedDown'     },
     pointing_right: { enabled: true, action: 'seekForward10' },
     pointing_left:  { enabled: true, action: 'seekBackward10'},
     peace_sign:     { enabled: true, action: 'toggleMute'    },
-    fist:           { enabled: true, action: 'seekBackward'  },
     pinch:          { enabled: true, action: 'volumeControl' },
   };
 
@@ -171,7 +168,8 @@
   let dwellState = { currentGesture: null, startTime: 0, fired: false };
 
   let lastActionTime = 0;
-  const ACTION_COOLDOWN = 800; // 800ms throttling
+  // Genel cooldown 800ms. Çift el tam ekran vb. için eyleme bağlı cooldown eklendi
+  const DEFAULT_COOLDOWN = 800;
 
   function handleDiscreteGesture(gesture, setting) {
     const now = performance.now();
@@ -193,7 +191,10 @@
     });
 
     if (progress >= 1.0 && !dwellState.fired) {
-      if (now - lastActionTime < ACTION_COOLDOWN) return;
+      // Eyleme özel cooldown hesapla
+      const cooldown = gesture.key === 'both_hands_open' ? 2000 : DEFAULT_COOLDOWN;
+      
+      if (now - lastActionTime < cooldown) return;
 
       dwellState.fired = true;
       lastActionTime = now;
