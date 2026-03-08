@@ -23,6 +23,8 @@ Elleriniz yemekten kirlenmiş de olsa, resim yaparken ya da sadece bir Jedi gibi
 ## ✨ Özellikler
 
 - **Çimdikleyerek Ses Kontrolü**: İşaret parmağınızı ve başparmağınızı çimdikleyerek sesi dinamik olarak değiştirin. İki parmak arasındaki mesafe, ses seviyesini gerçek zamanlı olarak ayarlar.
+- **Çift El ile Tam Ekran**: Her iki elinizi de kameraya açık bir şekilde göstererek sinematik bir deneyim için videoyu anında tam ekrana alın.
+- **Gelişmiş Yatay Navigasyon**: Elinizi sağa veya sola işaret ederek videoyu 10 saniye ileri veya geri sarın, veya avuç içinizi döndürerek videolar arası kolayca geçiş yapın.
 - **Midas Dokunuşu Koruması**: Yerleşik 600ms _Bekleme Süresi (Dwell Time)_ mekanizması sayesinde sistem sadece kasıtlı yapılan hareketleri algılar, elinizin yanlışlıkla kameraya çarpması eylemleri tetiklemez.
 - **Sıfır Gecikme & Gizlilik Odaklı**: Tüm makine öğrenimi süreçleri (MediaPipe WebAssembly ile) bir _Offscreen Document_ (Görünmez Belge) üzerinden lokal olarak çalışır. Hiçbir kamera görüntüsü internetteki bir sunucuya gönderilmez. Maksimum gizlilik!
 - **Akıcı Kullanıcı Arayüzü (UI)**: Hareketleri ne kadar başarılı yaptığınızı ve eylemlerin sonucunu anında gösteren, rahatsız etmeyen, cam (glassmorphism) efektli bir HUD ekrana yansıtılır.
@@ -30,13 +32,16 @@ Elleriniz yemekten kirlenmiş de olsa, resim yaparken ya da sadece bir Jedi gibi
 
 ## 🎯 Desteklenen Hareketler
 
-| Hareket                | İkon | Varsayılan Eylem       | Açıklama                                                                                       |
-| :--------------------- | :--: | :--------------------- | :--------------------------------------------------------------------------------------------- |
-| **Çimdik (Pinch)**     |  🤏  | **Gerçek Zamanlı Ses** | İşaret ile başparmağınızı birbirine yaklaştırarak sesi kısın ya da uzaklaştırarak açın.        |
-| **Açık El**            |  ✋  | **Oynat / Duraklat**   | Videoyu durdurmak veya oynatmak için düz ve açık bir el gösterin.                              |
-| **Beğeni / Başparmak** |  👍  | **Hızlandır (+0.25x)** | Diğer parmaklarınız kapalıyken başparmağınızı havaya kaldırıp hızı artırın.                    |
-| **Zafer İşareti**      |  ✌️  | **Sesi Kapat / Aç**    | Sesin tamamen kapanmasını ya da açılmasını sağlamak için işaret ve orta parmağınızı "V" yapın. |
-| **Yumruk**             |  ✊  | **Geri Sar (-5sn)**    | Videoyu 5 saniye geriye sarmak için kapalı bir yumruk yapın.                                   |
+| Hareket                | İkon  | Varsayılan Eylem       | Açıklama                                                                                       |
+| :--------------------- | :---: | :--------------------- | :--------------------------------------------------------------------------------------------- |
+| **Çift El**            |  👐   | **Tam Ekran**          | İki elinizi açık ve yan yana tutarak videoyu tam ekran moduna geçirin veya çıkın.              |
+| **Çimdik (Pinch)**     |  🤏   | **Gerçek Zamanlı Ses** | İşaret ile başparmağınızı birbirine yaklaştırarak sesi kısın ya da uzaklaştırarak açın.        |
+| **Açık El**            |  ✋   | **Oynat / Duraklat**   | Videoyu durdurmak veya oynatmak için düz ve açık bir el gösterin.                              |
+| **İşaret Yukarı**      |  ☝️   | **Sesi Kapat / Aç**    | Sadece işaret parmağınızı havaya kaldırarak sesi tamamen kapatıp açın.                         |
+| **Sağ / Sol Avuç**     | 🫱/🫲 | **Sonraki/Önceki V.**  | Avuç içinizi yana çevirerek YouTube algoritmasında veya çalma listesinde gezin.                |
+| **Sağa / Sola İşaret** | 👉/👈 | **10 Sn İleri/Geri**   | İşaret parmağınızla yön belirterek videoyu hızlıca 10 saniye atlatın.                          |
+| **Zafer İşareti**      |  ✌️   | **Sesi Kapat / Aç**    | Sesin tamamen kapanmasını ya da açılmasını sağlamak için işaret ve orta parmağınızı "V" yapın. |
+| **Yumruk**             |  ✊   | **Geri Sar (-5sn)**    | Videoyu 5 saniye geriye sarmak için kapalı bir yumruk yapın.                                   |
 
 _(Not: Bu eylemlerin tümü eklenti menüsündeki açılır listeler aracılığıyla kendi zevkinize göre değiştirilebilir)_
 
@@ -53,7 +58,7 @@ Menünün en üstünde yer alan anahtar, **Kamerayı ve Eklentiyi Aç/Kapat**man
 
 ### Hareket ve Eylem Özelleştirme
 
-Kameranın altındaki listede 5 farklı el hareketini (Açık El, Başparmak, Zafer İşareti, Yumruk, Çimdik) göreceksiniz.
+Kameranın altındaki listede 10 farklı el hareketini (Çift El, Açık El, İşaret Yukarı, Sağ/Sol Avuç, 👉/👈 vb.) göreceksiniz.
 
 1. **Toggle/Switch Düğmesi:** İlgili hareketi tamamen devre dışı bırakmak veya tekrar açmak için kullanılır. Sevmediğiniz veya kazara kendi kendinize çok yaptığınız bir el hareketi varsa yanındaki düğmeden o hareketi susturabilirsiniz.
 2. **Açılır Menü (Dropdown):** Her hareketin yanındaki açılır menüden, bu hareket yapıldığında YouTube'da hangi işlevin tetikleneceğini seçebilirsiniz. Örneğin "Yumruk" yaptığınızda "İleri Sar" yerine "Duraklat" işlevinin çalışmasını istiyorsanız açılır menüden özgürce ayarlayabilir, kendi favori düzeninizi yaratabilirsiniz.
