@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YouTube Hand Control</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="popup-container">
+      <!-- Header -->
+      <header class="popup-header">
+        <div class="logo-row">
+          <span class="logo-icon">🤚</span>
+          <h1>Hand Control</h1>
+        </div>
+        <p class="subtitle">v2.0 • Gesture Engine</p>
+      </header>
+
+      <!-- Camera Toggle Card -->
+      <section class="card toggle-card">
+        <div class="toggle-row">
+          <div class="status-indicator">
+            <span id="statusDot" class="dot off"></span>
+            <span id="statusLabel" class="status-text">Kapalı</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="cameraToggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Gesture Settings Card -->
+      <section class="card gestures-card">
+        <h2>Hareket Ayarları</h2>
+        <div class="gesture-settings" id="gestureSettings">
+          <!-- JS tarafından doldurulacak -->
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="popup-footer">
+        <span>v2.0 • MediaPipe Hands</span>
+      </footer>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>

@@ -1,0 +1,371 @@
+/* ============================================================================
+ *  YouTube Hand Control — Popup Stylesheet (popup.css)
+ * ============================================================================
+ *  V2.0 — Premium dark glassmorphism theme with gesture settings.
+ * ============================================================================ */
+
+/* ─── Imports ──────────────────────────────────────────────────────────────── */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+/* ─── Root Variables ───────────────────────────────────────────────────────── */
+:root {
+  --bg-primary: #0f0f13;
+  --bg-card: rgba(255, 255, 255, 0.04);
+  --bg-card-hover: rgba(255, 255, 255, 0.07);
+  --border-card: rgba(255, 255, 255, 0.08);
+  --text-primary: #e8e8ec;
+  --text-secondary: #8a8a9a;
+  --accent: #6c5ce7;
+  --accent-glow: rgba(108, 92, 231, 0.35);
+  --green: #00e676;
+  --green-glow: rgba(0, 230, 118, 0.4);
+  --red: #ff5252;
+  --red-glow: rgba(255, 82, 82, 0.4);
+  --radius: 14px;
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Reset & Base ─────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 340px;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Container ────────────────────────────────────────────────────────────── */
+.popup-container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ─── Header ───────────────────────────────────────────────────────────────── */
+.popup-header {
+  text-align: center;
+  padding-bottom: 4px;
+}
+
+.logo-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  font-size: 28px;
+  filter: drop-shadow(0 0 8px var(--accent-glow));
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.popup-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--accent), #a29bfe);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* ─── Cards ────────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius);
+  padding: 16px;
+  transition:
+    background var(--transition),
+    border-color var(--transition);
+}
+
+.card:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ─── Toggle Card ──────────────────────────────────────────────────────────── */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transition:
+    background var(--transition),
+    box-shadow var(--transition);
+}
+
+.dot.on {
+  background: var(--green);
+  box-shadow:
+    0 0 10px var(--green-glow),
+    0 0 20px var(--green-glow);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.dot.off {
+  background: var(--red);
+  box-shadow: 0 0 8px var(--red-glow);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.status-text {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* ─── Toggle Switch ────────────────────────────────────────────────────────── */
+.switch {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 28px;
+  transition:
+    background var(--transition),
+    box-shadow var(--transition);
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  left: 3px;
+  bottom: 3px;
+  background: var(--text-primary);
+  border-radius: 50%;
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
+}
+
+.switch input:checked + .slider {
+  background: var(--accent);
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+
+.switch input:checked + .slider::before {
+  transform: translateX(24px);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ─── Gesture Settings Card ────────────────────────────────────────────────── */
+.gestures-card h2 {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.gesture-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gesture-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.gesture-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.gesture-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.controls-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+
+.gesture-row.disabled {
+  opacity: 0.4;
+}
+
+.gesture-row .g-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.gesture-row .g-name {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+/* Mini toggle for each gesture */
+.mini-switch {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.mini-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.mini-slider {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  transition: background var(--transition);
+}
+
+.mini-slider::before {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  left: 2px;
+  bottom: 2px;
+  background: var(--text-primary);
+  border-radius: 50%;
+  transition: transform var(--transition);
+}
+
+.mini-switch input:checked + .mini-slider {
+  background: var(--accent);
+}
+
+.mini-switch input:checked + .mini-slider::before {
+  transform: translateX(16px);
+}
+
+/* Action dropdown */
+.action-select {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 10px;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition);
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238a8a9a'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 24px;
+}
+
+.action-select:focus {
+  border-color: var(--accent);
+}
+
+.action-select option {
+  background: #1a1a2e;
+  color: var(--text-primary);
+}
+
+/* ─── Footer ───────────────────────────────────────────────────────────────── */
+.popup-footer {
+  text-align: center;
+  font-size: 10px;
+  color: var(--text-secondary);
+  opacity: 0.6;
+  padding-top: 4px;
+}
