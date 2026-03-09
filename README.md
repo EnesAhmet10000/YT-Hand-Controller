@@ -16,21 +16,30 @@
 
 ## 🌟 Genel Bakış
 
-**YouTube Hand Control**, bilgisayarınızın kamerasını kullanarak YouTube videolarını bilimkurgu filmlerindeki gibi sadece el hareketlerinizle kontrol etmenizi (oynatma, duraklatma, ses, ileri-geri sarma, hızlandırma vb.) sağlayan yepyeni bir Google Chrome eklentisidir. Arka planda Google'ın **MediaPipe Hands** yapay zeka modelini kullanır. En güzel yanı ne mi? %100 yerel (local) çalışır; yani görüntünüz hiçbir zaman bir bulut sunucusuna gönderilmez!
+**YouTube Hand Control**, bilgisayarınızın kamerasını kullanarak YouTube videolarını bilimkurgu filmlerindeki gibi sadece el hareketlerinizle kontrol etmenizi (oynatma, duraklatma, ses, ileri-geri sarma, hızlandırma vb.) sağlayan bir Google Chrome eklentisidir. Arka planda Google'ın
+**MediaPipe Hands** yapay zeka modelini kullanır.
 
-Elleriniz yemekten kirlenmiş de olsa, resim yaparken fırçayı bırakmak istemeseniz de ya da sadece kendinizi bir Jedi gibi hissetmek istediğinizde, bu eklenti kurtarıcınız olacak. Denedikten sonra klavyeye veya fareye dokunmak istemeyeceksiniz.
+En güzel yanı ne mi? %100 yerel (local) çalışır; yani görüntünüz hiçbir zaman bir bulut sunucusuna gönderilmez!
+
+Elleriniz yemekten kirlenmiş de olsa, resim yaparken fırçayı bırakmak istemeseniz de ya da sadece kendinizi bir Jedi gibi hissetmek istediğinizde, bu eklenti kurtarıcınız olacak.
 
 ## ✨ Özellikler
 
-- **Çimdikleyerek Ses Kontrolü (Önerilmez)**: İşaret parmağınızı ve başparmağınızı çimdikleyerek sesi dinamik olarak değiştirin. İki parmak arasındaki mesafe, ses seviyesini gerçek zamanlı olarak ayarlar.
-- **Çift El ile Tam Ekran**: Her iki elinizi de kameraya açık bir şekilde göstererek sinematik bir deneyim için videoyu anında tam ekrana alın.
+- **Çift El ile Tam Ekran**: Her iki elinizi de kameraya açık bir şekilde 👐 göstererek sinematik bir deneyim için videoyu anında tam ekrana alın.
+
 - **Gelişmiş Yatay Navigasyon**: Elinizi sağa veya sola işaret ederek videoyu 10 saniye ileri veya geri sarın, veya avuç içinizi döndürerek videolar arası kolayca geçiş yapın.
+
 - **Trigonometrik Kararlılık & Kusursuz Algılama**: Eski nesil sistemleri tamamen çöpe attık. Artık elin kameraya olan uzaklığına veya açısına bakmaksızın, parmaklar arasındaki **Trigonometrik Açıyı (Math.atan2)** ve Öklid uzaklığını hesaplayan yepyeni bir "Orta Parmak Kilidi" (Middle Finger Lock) mantığı kurduk. İşaret etme (👉) ve Peace (✌️) gibi hareketler birbirine karışmıyor!
+
 - **Midas Dokunuşu Koruması**: Yerleşik akıllı bekleme süresi ve özel "Cooldown" algoritmaları sayesinde sistem sadece _kasıtlı_ yapılan hareketlerinizi algılar. Kameranın önünden yanlışlıkla elinizi geçirdiniz diye videolar birbirine girmez.
+
 - **Sıfır Gecikme & %100 Gizlilik**: Tüm yapay zeka süreçleri bir _Offscreen Document_ (Görünmez Belge) içinde kendi bilgisayarınızın işlemcisiyle çözülür. Kameranız sizi izleyip başkasına veri yollamaz; her şey bilgisayarınızda kalır.
+
 - **Akıcı ve Çok Dilli Arayüz (I18N)**: YouTube ekranının üzerinde beliren o şık cam efeftli (glassmorphism) HUD bildirimleri, siz hareketleri yaptıkça size anlık tepkiler verir. Üstelik artık **Türkçe, İngilizce ve Arapça (RTL Destekli)**! Menüden dilinizi seçtiğiniz an, YouTube'un üzerindeki bildirimler ve menü harika bir simetriyle dilinize adapte olur.
+
 - **Akıllı Güç Tasarrufu**: Eklentiyi menüsünden kapattığınız an tüm donanım anında serbest bırakılır ve bilgisayarınızda bir gram bile fazladan CPU harcamaz.
 - **Air Mouse Modu (Sanal İmleç)**: İşaret ve başparmağınızı birleştirip (çimdik ucu), diğer üç parmağınızı açık tutarak elinizi bir fareye dönüştürün! Ekranda beliren sanal imleci elinizle yönlendirebilir ve otomatik sol tıklama işlemi (Dwell) yapabilirsiniz.
+- **Çimdikleyerek Ses Kontrolü (Önerilmez)**: İşaret parmağınızı ve başparmağınızı çimdikleyerek sesi dinamik olarak değiştirin. İki parmak arasındaki mesafe, ses seviyesini gerçek zamanlı olarak ayarlar.
 
 ## 🎯 Desteklenen Hareketler
 
