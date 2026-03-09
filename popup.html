@@ -60,6 +60,30 @@
         </div>
       </section>
 
+      <!-- Camera Preview Card -->
+      <section class="card toggle-card">
+        <div class="toggle-row">
+          <div class="status-indicator">
+            <span style="font-size: 18px; margin-right: 8px;">📷</span>
+            <span id="previewLabel" class="status-text">Kamera Önizleme</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="previewToggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row" id="previewModeContainer" style="margin-top: 12px; display: none;">
+          <div class="status-indicator">
+            <span style="font-size: 14px; margin-right: 8px;">👀</span>
+            <span id="previewModeLabel" class="status-text" style="font-size: 12px; opacity: 0.8;">Önizleme Modu</span>
+          </div>
+          <select id="previewModeSelect" class="action-select" style="max-width: 140px; font-size: 11px;">
+            <option value="full" id="optFullVideo">Tam Görüntü</option>
+            <option value="skeleton" id="optSkeleton">Sadece İskelet</option>
+          </select>
+        </div>
+      </section>
+
       <!-- Gesture Settings Card -->
       <section class="card gestures-card">
         <h2>Hareket Ayarları</h2>

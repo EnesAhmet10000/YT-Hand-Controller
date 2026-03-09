@@ -484,6 +484,59 @@
     clearTimeout(toastTimer);
   }
 
+  let previewContainer = null;
+  let previewImage = null;
+
+  function getOrCreatePreview() {
+    if (previewContainer) return previewContainer;
+
+    previewContainer = document.createElement('div');
+    previewContainer.id = 'yt-handcontrol-preview-container';
+    previewContainer.innerHTML = `
+      <style>
+        #yt-handcontrol-preview-container {
+          position: fixed;
+          top: 80px;
+          left: 20px;
+          width: 240px;
+          height: 180px;
+          border-radius: 12px;
+          border: 4px solid rgba(108, 92, 231, 0.8);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+          background-color: #000;
+          z-index: 999999;
+          overflow: hidden;
+          pointer-events: none;
+          transition: opacity 0.3s ease;
+        }
+        #yt-handcontrol-preview-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      </style>
+      <img id="yt-handcontrol-preview-img" src="" />
+    `;
+    document.body.appendChild(previewContainer);
+    previewImage = previewContainer.querySelector('#yt-handcontrol-preview-img');
+    return previewContainer;
+  }
+
+  function updatePreviewFrame(dataUrl) {
+    getOrCreatePreview();
+    if (previewImage) {
+      previewImage.src = dataUrl;
+    }
+  }
+
+  function hidePreviewFrame() {
+    if (previewContainer) {
+      previewContainer.remove();
+      previewContainer = null;
+      previewImage = null;
+    }
+  }
+
 
   // ═══════════════════════════════════════════════════════════════════════════
   //  E. MESSAGE LISTENER — Offscreen / Background Mesaj Dinleyicisi
@@ -550,6 +603,18 @@
         return;
       }
 
+      // Preview frame alımı
+      if (message.type === 'PREVIEW_FRAME') {
+        updatePreviewFrame(message.data);
+        return;
+      }
+
+      // Preview kapatıldı mesajı
+      if (message.type === 'PREVIEW_CLOSED') {
+        hidePreviewFrame();
+        return;
+      }
+
       // Aksiyon tetikleme
       if (message.type === 'GESTURE_ACTION') {
         const video = getVideoElement();
@@ -583,6 +648,9 @@
   chrome.storage.onChanged.addListener((changes, namespace) => {
     if (namespace === 'local' && changes.language) {
       currentLang = changes.language.newValue;
+    }
+    if (namespace === 'local' && changes.previewEnabled) {
+      if (!changes.previewEnabled.newValue) hidePreviewFrame();
     }
   });
 

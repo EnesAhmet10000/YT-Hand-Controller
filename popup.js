@@ -48,7 +48,11 @@ const translations = {
     statusOn: 'Aktif',
     statusOff: 'Kapalı',
     statusDenied: 'İzin Reddedildi',
-    airMouse: 'Air Mouse Modu'
+    airMouse: 'Air Mouse Modu',
+    cameraPreview: 'Kamera Önizleme',
+    previewModeLabel: 'Önizleme Modu',
+    optFullVideo: 'Tam Görüntü',
+    optSkeleton: 'Sadece İskelet'
   },
   en: {
     both_hands_open: 'Both Hands',
@@ -89,7 +93,11 @@ const translations = {
     statusOn: 'Active',
     statusOff: 'Off',
     statusDenied: 'Permission Denied',
-    airMouse: 'Air Mouse Mode'
+    airMouse: 'Air Mouse Mode',
+    cameraPreview: 'Camera Preview',
+    previewModeLabel: 'Preview Mode',
+    optFullVideo: 'Full Video',
+    optSkeleton: 'Skeleton Only'
   },
   ar: {
     both_hands_open: 'كلتا اليدين',
@@ -130,7 +138,11 @@ const translations = {
     statusOn: 'نشط',
     statusOff: 'مغلق',
     statusDenied: 'تم رفض الإذن',
-    airMouse: 'وضع الماوس الهوائي'
+    airMouse: 'وضع الماوس الهوائي',
+    cameraPreview: 'معاينة الكاميرا',
+    previewModeLabel: 'وضع المعاينة',
+    optFullVideo: 'فيديو كامل',
+    optSkeleton: 'هيكل عظمي فقط'
   }
 };
 
@@ -196,6 +208,13 @@ const gesturesTitleElem = document.querySelector('.gestures-card h2');
 const langSelect   = document.getElementById('langSelect');
 const airMouseToggle = document.getElementById('airMouseToggle');
 const airMouseLabel  = document.getElementById('airMouseLabel');
+const previewToggle  = document.getElementById('previewToggle');
+const previewLabel   = document.getElementById('previewLabel');
+const previewModeContainer = document.getElementById('previewModeContainer');
+const previewModeLabel = document.getElementById('previewModeLabel');
+const previewModeSelect = document.getElementById('previewModeSelect');
+const optFullVideo = document.getElementById('optFullVideo');
+const optSkeleton = document.getElementById('optSkeleton');
 
 let currentLang = 'tr';
 
@@ -348,6 +367,12 @@ function setLanguage(lang, settings) {
   if (airMouseLabel) {
     airMouseLabel.textContent = translations[lang].airMouse;
   }
+  if (previewLabel) {
+    previewLabel.textContent = translations[lang].cameraPreview;
+    if (previewModeLabel) previewModeLabel.textContent = translations[lang].previewModeLabel;
+    if (optFullVideo) optFullVideo.textContent = translations[lang].optFullVideo;
+    if (optSkeleton) optSkeleton.textContent = translations[lang].optSkeleton;
+  }
   
   updateCameraUI(toggle.checked);
   
@@ -368,8 +393,13 @@ langSelect.addEventListener('change', (e) => {
 
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Ayarları getir ve UI oluştur
-  chrome.storage.local.get({ language: 'tr', gestureSettings: DEFAULT_SETTINGS, airMouseEnabled: false }, (data) => {
+  chrome.storage.local.get({ language: 'tr', gestureSettings: DEFAULT_SETTINGS, airMouseEnabled: false, previewEnabled: false, previewMode: 'full' }, (data) => {
     if (airMouseToggle) airMouseToggle.checked = data.airMouseEnabled;
+    if (previewToggle) {
+      previewToggle.checked = data.previewEnabled;
+      if (previewModeContainer) previewModeContainer.style.display = data.previewEnabled ? 'flex' : 'none';
+    }
+    if (previewModeSelect) previewModeSelect.value = data.previewMode;
     
     const settings = { ...DEFAULT_SETTINGS, ...data.gestureSettings };
     if (!data.gestureSettings) {
@@ -388,6 +418,25 @@ document.addEventListener('DOMContentLoaded', () => {
     airMouseToggle.addEventListener('change', () => {
       chrome.storage.local.set({ airMouseEnabled: airMouseToggle.checked }, () => {
         chrome.runtime.sendMessage({ type: 'UPDATE_SETTINGS', airMouseEnabled: airMouseToggle.checked });
+      });
+    });
+  }
+
+  // 4. Preview Toggle Dinleyicisi
+  if (previewToggle) {
+    previewToggle.addEventListener('change', () => {
+      if (previewModeContainer) previewModeContainer.style.display = previewToggle.checked ? 'flex' : 'none';
+      chrome.storage.local.set({ previewEnabled: previewToggle.checked }, () => {
+        chrome.runtime.sendMessage({ type: 'TOGGLE_PREVIEW', previewEnabled: previewToggle.checked });
+      });
+    });
+  }
+
+  // 5. Preview Mode Dinleyicisi
+  if (previewModeSelect) {
+    previewModeSelect.addEventListener('change', () => {
+      chrome.storage.local.set({ previewMode: previewModeSelect.value }, () => {
+        chrome.runtime.sendMessage({ type: 'UPDATE_PREVIEW_MODE', previewMode: previewModeSelect.value });
       });
     });
   }

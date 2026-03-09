@@ -102,7 +102,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     message.type === 'GESTURE_DWELL' ||
     message.type === 'GESTURE_RESET' ||
     message.type === 'MOUSE_MOVE' ||
-    message.type === 'MOUSE_CLICK'
+    message.type === 'MOUSE_CLICK' ||
+    message.type === 'PREVIEW_FRAME' ||
+    message.type === 'PREVIEW_CLOSED'
   ) {
     forwardToActiveYouTubeTab(message);
     sendResponse({ status: 'ok' });
@@ -138,8 +140,8 @@ async function handleSetState(message, sendResponse) {
     
     // Yükleme süresi boyunca kullanıcı kamerayı geri KAPATMIŞ olabilir mi?
     if (intendedCameraState) {
-      const data = await chrome.storage.local.get({ gestureSettings: null, airMouseEnabled: false });
-      safeSendMessage({ type: 'START_CAMERA', gestureSettings: data.gestureSettings, airMouseEnabled: data.airMouseEnabled });
+      const data = await chrome.storage.local.get({ gestureSettings: null, airMouseEnabled: false, previewEnabled: false, previewMode: 'full' });
+      safeSendMessage({ type: 'START_CAMERA', gestureSettings: data.gestureSettings, airMouseEnabled: data.airMouseEnabled, previewEnabled: data.previewEnabled, previewMode: data.previewMode });
     }
   } else {
     safeSendMessage({ type: 'STOP_CAMERA' });

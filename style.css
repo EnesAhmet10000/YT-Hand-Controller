@@ -1,0 +1,22 @@
+/* style.css for offscreen document camera preview */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+}
+
+#previewCanvas {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 240px; /* Scaled down for preview */
+  height: 180px;
+  border-radius: 12px;
+  border: 4px solid rgba(108, 92, 231, 0.8); /* matching accent color */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  background-color: #000;
+  z-index: 9999;
+  object-fit: cover;
+  pointer-events: none;
+}

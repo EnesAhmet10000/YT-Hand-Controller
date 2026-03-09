@@ -282,6 +282,10 @@
 
   let airMouseEnabled = false;
   let airMouseState = { active: false, lastX: 0, lastY: 0, stationaryTime: 0, lastPinchEndTime: 0 };
+  let previewEnabled = false;
+  let previewMode = 'full';
+  let previewCanvas = null;
+  let previewCtx = null;
 
   async function startCamera() {
     if (isRunning) return;
@@ -296,6 +300,13 @@
       cameraVideo = document.getElementById('cameraVideo');
       cameraVideo.srcObject = cameraStream;
       await cameraVideo.play();
+      
+      previewCanvas = document.getElementById('previewCanvas');
+      if (previewCanvas) {
+        previewCanvas.width = 320;
+        previewCanvas.height = 240;
+        previewCtx = previewCanvas.getContext('2d');
+      }
 
       /* global Hands */
       handsInstance = new Hands({
@@ -335,7 +346,75 @@
     }
   }
 
+  function drawHandSkeleton(ctx, landmarks, width, height) {
+    const connections = [
+      [0,1], [1,2], [2,3], [3,4], // Thumb
+      [0,5], [5,6], [6,7], [7,8], // Index
+      [5,9], [9,10], [10,11], [11,12], // Middle
+      [9,13], [13,14], [14,15], [15,16], // Ring
+      [13,17], [17,18], [18,19], [19,20], // Pinky
+      [0,17] // Wrist to pinky base
+    ];
+    
+    // Draw lines
+    ctx.strokeStyle = '#00e676';
+    ctx.lineWidth = 2;
+    for (const [start, end] of connections) {
+      const p1 = landmarks[start];
+      const p2 = landmarks[end];
+      ctx.beginPath();
+      ctx.moveTo(p1.x * width, p1.y * height);
+      ctx.lineTo(p2.x * width, p2.y * height);
+      ctx.stroke();
+    }
+    
+    // Draw points
+    ctx.fillStyle = '#ff5252';
+    for (const point of landmarks) {
+      ctx.beginPath();
+      ctx.arc(point.x * width, point.y * height, 3, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+  }
+
+  let lastPreviewSentTime = 0;
+
   function onHandResults(results) {
+    // Çizim Mantığı: Sadece görünürse çiz
+    if (previewEnabled && previewCanvas && previewCtx) {
+      previewCtx.save();
+      previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+      // Video ve İskelet çizimi (selfieMode: true olduğu için zaten aynalı gelir)
+      
+      if (previewMode === 'skeleton') {
+        // Sadece iskelet (Yüz gizli - siyah arkaplan)
+        previewCtx.fillStyle = '#000000';
+        previewCtx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
+      } else {
+        // Videoyu çiz (results.image)
+        if (results.image) {
+          previewCtx.drawImage(results.image, 0, 0, previewCanvas.width, previewCanvas.height);
+        } else if (cameraVideo) {
+          previewCtx.drawImage(cameraVideo, 0, 0, previewCanvas.width, previewCanvas.height);
+        }
+      }
+
+      // İskelet Çizimi
+      if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        for (const landmarks of results.multiHandLandmarks) {
+          drawHandSkeleton(previewCtx, landmarks, previewCanvas.width, previewCanvas.height);
+        }
+      }
+      
+      previewCtx.restore();
+
+      const now = performance.now();
+      if (now - lastPreviewSentTime > 66) { // ~15 FPS sınırı (performans için)
+        sendMsg({ type: 'PREVIEW_FRAME', data: previewCanvas.toDataURL('image/jpeg', 0.5) });
+        lastPreviewSentTime = now;
+      }
+    }
+
     if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) {
       resetDwell();
       return;
@@ -458,13 +537,27 @@
     if (message.type === 'START_CAMERA') {
       if (message.gestureSettings) gestureSettings = { ...DEFAULT_SETTINGS, ...message.gestureSettings };
       if (message.airMouseEnabled !== undefined) airMouseEnabled = message.airMouseEnabled;
+      if (message.previewEnabled !== undefined) previewEnabled = message.previewEnabled;
+      if (message.previewMode !== undefined) previewMode = message.previewMode;
       startCamera();
     } else if (message.type === 'STOP_CAMERA') {
       stopCamera();
     } else if (message.type === 'UPDATE_SETTINGS') {
       if (message.gestureSettings) gestureSettings = { ...DEFAULT_SETTINGS, ...message.gestureSettings };
       if (message.airMouseEnabled !== undefined) airMouseEnabled = message.airMouseEnabled;
+      if (message.previewEnabled !== undefined) {
+        previewEnabled = message.previewEnabled;
+        if (!previewEnabled) sendMsg({ type: 'PREVIEW_CLOSED' });
+      }
+      if (message.previewMode !== undefined) previewMode = message.previewMode;
       console.log('[Offscreen] Ayarlar güncellendi.');
+    } else if (message.type === 'TOGGLE_PREVIEW') {
+      previewEnabled = message.previewEnabled;
+      if (!previewEnabled) sendMsg({ type: 'PREVIEW_CLOSED' });
+      console.log('[Offscreen] Kamera önizleme durumu:', previewEnabled);
+    } else if (message.type === 'UPDATE_PREVIEW_MODE') {
+      previewMode = message.previewMode;
+      console.log('[Offscreen] Önizleme modu ayarlandı:', previewMode);
     }
     sendResponse({ status: 'ok' });
     return true;

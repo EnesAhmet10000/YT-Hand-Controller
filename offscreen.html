@@ -3,10 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Hand Control Offscreen</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <!-- Hidden video element for getUserMedia camera feed -->
   <video id="cameraVideo" width="640" height="480" style="position:absolute;left:-9999px;" playsinline autoplay></video>
+
+  <!-- Preview Canvas -->
+  <canvas id="previewCanvas" width="640" height="480"></canvas>
 
   <!-- MediaPipe Hands library — runs in extension origin, no CSP issues -->
   <script src="lib/hands.js"></script>
