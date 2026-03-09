@@ -30,19 +30,21 @@ Elleriniz yemekten kirlenmiş de olsa, resim yaparken fırçayı bırakmak istem
 - **Sıfır Gecikme & %100 Gizlilik**: Tüm yapay zeka süreçleri bir _Offscreen Document_ (Görünmez Belge) içinde kendi bilgisayarınızın işlemcisiyle çözülür. Kameranız sizi izleyip başkasına veri yollamaz; her şey bilgisayarınızda kalır.
 - **Akıcı ve Çok Dilli Arayüz (I18N)**: YouTube ekranının üzerinde beliren o şık cam efeftli (glassmorphism) HUD bildirimleri, siz hareketleri yaptıkça size anlık tepkiler verir. Üstelik artık **Türkçe, İngilizce ve Arapça (RTL Destekli)**! Menüden dilinizi seçtiğiniz an, YouTube'un üzerindeki bildirimler ve menü harika bir simetriyle dilinize adapte olur.
 - **Akıllı Güç Tasarrufu**: Eklentiyi menüsünden kapattığınız an tüm donanım anında serbest bırakılır ve bilgisayarınızda bir gram bile fazladan CPU harcamaz.
+- **Air Mouse Modu (Sanal İmleç)**: İşaret ve başparmağınızı birleştirip (çimdik ucu), diğer üç parmağınızı açık tutarak elinizi bir fareye dönüştürün! Ekranda beliren sanal imleci elinizle yönlendirebilir ve otomatik sol tıklama işlemi (Dwell) yapabilirsiniz.
 
 ## 🎯 Desteklenen Hareketler
 
-| Hareket                | İkon  | Varsayılan Eylem       | Açıklama                                                                                       |
-| :--------------------- | :---: | :--------------------- | :--------------------------------------------------------------------------------------------- |
-| **Çift El**            |  👐   | **Tam Ekran**          | İki elinizi açık ve yan yana tutarak videoyu tam ekran moduna geçirin veya çıkın.              |
-| **Çimdik (Önerilmez)** |  🤏   | **Gerçek Zamanlı Ses** | İşaret ile başparmağınızı birbirine yaklaştırarak sesi kısın ya da uzaklaştırarak açın.        |
-| **Açık El**            |  ✋   | **Oynat / Duraklat**   | Videoyu durdurmak veya oynatmak için düz ve açık bir el gösterin.                              |
-| **İşaret Yukarı**      |  ☝️   | **Sesi %5 Artır**      | Sadece işaret parmağınızı havaya kaldırarak videonun sesini azar azar yükseltin.               |
-| **Vulcan**             |  🖖   | **Sesi %5 Azalt**      | Meşhur Uzay Yolu (Spock) selamını vererek sesi azar azar kısın.                                |
-| **Sağ / Sol Avuç**     | 🫱/🫲 | **Hızlandır/Yavaşlat** | Avuç içinizi yana çevirerek videonun oynatma hızını ±0.25 oranında artırıp azaltın.            |
-| **Sağa / Sola İşaret** | 👉/👈 | **10 Sn İleri/Geri**   | İşaret parmağınızla yön belirterek videoyu hızlıca 10 saniye atlatın.                          |
-| **Zafer İşareti**      |  ✌️   | **Sesi Kapat / Aç**    | Sesin tamamen kapanmasını ya da açılmasını sağlamak için işaret ve orta parmağınızı "V" yapın. |
+| Hareket                | İkon  | Varsayılan Eylem       | Açıklama                                                                                                |
+| :--------------------- | :---: | :--------------------- | :------------------------------------------------------------------------------------------------------ |
+| **Çift El**            |  👐   | **Tam Ekran**          | İki elinizi açık ve yan yana tutarak videoyu tam ekran moduna geçirin veya çıkın.                       |
+| **Çift İşaret Yukarı** |  🙌   | **Kaliteyi Arttır**    | İki elinizin de işaret parmağını havaya kaldırarak video kalitesini en yüksek (Maximum) seviyeye çeker. |
+| **Çimdik (Önerilmez)** |  🤏   | **Gerçek Zamanlı Ses** | İşaret ile başparmağınızı birbirine yaklaştırarak sesi kısın ya da uzaklaştırarak açın.                 |
+| **Açık El**            |  ✋   | **Oynat / Duraklat**   | Videoyu durdurmak veya oynatmak için düz ve açık bir el gösterin.                                       |
+| **İşaret Yukarı**      |  ☝️   | **Sesi %5 Artır**      | Sadece işaret parmağınızı havaya kaldırarak videonun sesini azar azar yükseltin.                        |
+| **Vulcan**             |  🖖   | **Sesi %5 Azalt**      | Meşhur Uzay Yolu (Spock) selamını vererek sesi azar azar kısın.                                         |
+| **Sağ / Sol Avuç**     | 🫱/🫲 | **Hızlandır/Yavaşlat** | Avuç içinizi yana çevirerek videonun oynatma hızını ±0.25 oranında artırıp azaltın.                     |
+| **Sağa / Sola İşaret** | 👉/👈 | **10 Sn İleri/Geri**   | İşaret parmağınızla yön belirterek videoyu hızlıca 10 saniye atlatın.                                   |
+| **Zafer İşareti**      |  ✌️   | **Sesi Kapat / Aç**    | Sesin tamamen kapanmasını ya da açılmasını sağlamak için işaret ve orta parmağınızı "V" yapın.          |
 
 _(Not: Bu eylemlerin tümü eklenti menüsündeki açılır listeler aracılığıyla kendi zevkinize göre değiştirilebilir)_
 
@@ -56,6 +58,10 @@ Menünün en üstünde yer alan anahtar, **Kamerayı ve Eklentiyi Aç/Kapat**man
 
 - **Açık Konum:** Kamera aktifleşir, MediaPipe motoru arkaplanda çalışmaya başlar ve YouTube'da el hareketlerinizi dinlemeye başlar.
 - **Kapalı Konum:** Kamera tamamen kapanır, eklenti tüm donanım serbest bırakır ve işlemci tüketimini **Sıfır'a** indirir.
+
+### Air Mouse Modu
+
+Popup penceresindeki "Air Mouse Modu" anahtarını aktifleştirirseniz, el hareketlerinizle (işaret ve başparmak birleşikken) ekranda sanal bir fareyi kontrol edebilir ve dilediğiniz YouTube butonuna tıklayabilirsiniz.
 
 ### Hareket ve Eylem Özelleştirme
 
@@ -91,6 +97,8 @@ En güncel **Manifest V3** standartlarıyla inşa edilen eklenti, üçlü bir mi
 ## 🆕 Son Güncellemeler (Latest Updates)
 
 - **Çoklu Dil Desteği (I18N):** Popup arayüzüne dil seçimi (Türkçe, İngilizce, Arapça) eklendi ve RTL desteği sağlandı.
+- **Air Mouse Özelliği:** Sanal imleç desteği getirilerek, eklentiyi sadece videoyu değil tüm arayüzü kontrol edecek şekle dönüştürme adımları atıldı.
+- **Gelişmiş Hareketler:** Çift işaret parmağı kaldırıldığı anda video kalitesini en yükseğe alan yeni "Kalite Arttırıcı" eylem eklendi.
 - **Tam Senkronizasyon (Durum Yönetimi):** Kamera Açık/Kapalı durumu artık arkaplan (background.js), görünmez sayfa (offscreen.js) ve menü (popup.html) arasında kusursuz bir şekilde senkronize çalışıyor.
 - **Hata Düzeltmeleri & İyileştirmeler:** İşaret parmağı (👉/👈) ve Barış (✌️) işareti arasındaki algılama sorunları katı kurallarla çözüldü, WebGL hataları giderildi.
 
