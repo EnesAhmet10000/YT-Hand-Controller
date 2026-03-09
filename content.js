@@ -506,19 +506,103 @@
           background-color: #000;
           z-index: 999999;
           overflow: hidden;
-          pointer-events: none;
           transition: opacity 0.3s ease;
+          cursor: move;
+          pointer-events: auto;
+        }
+        #yt-handcontrol-preview-container.dragging {
+          opacity: 0.8;
+          border-color: #a29bfe;
+          box-shadow: 0 8px 25px rgba(108, 92, 231, 0.6);
+          transition: none;
         }
         #yt-handcontrol-preview-img {
           width: 100%;
           height: 100%;
           object-fit: cover;
+          pointer-events: none;
         }
       </style>
-      <img id="yt-handcontrol-preview-img" src="" />
+      <img id="yt-handcontrol-preview-img" src="" draggable="false" />
     `;
     document.body.appendChild(previewContainer);
     previewImage = previewContainer.querySelector('#yt-handcontrol-preview-img');
+
+    // Kayıtlı Konumu Geri Yükle
+    chrome.storage.local.get({ previewPos: { top: 80, left: 20 } }, (res) => {
+      let top = res.previewPos.top;
+      let left = res.previewPos.left;
+      
+      // Sınır Güvenliği (Zaten kapattıktan sonra çözünürlük vs. değiştiyse dışarda kalmasın)
+      const maxL = window.innerWidth - 240;
+      const maxT = window.innerHeight - 180;
+      left = Math.max(0, Math.min(left, maxL));
+      top  = Math.max(0, Math.min(top, maxT));
+
+      previewContainer.style.top = top + 'px';
+      previewContainer.style.left = left + 'px';
+    });
+
+    // --- Sürükleme (Drag & Drop) Mantığı ---
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let initialLeft = 0, initialTop = 0;
+
+    const onMouseMove = (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+
+      let newLeft = initialLeft + dx;
+      let newTop  = initialTop + dy;
+
+      // Sınır Kontrolleri (Boundary Check)
+      const maxL = window.innerWidth - previewContainer.offsetWidth;
+      const maxT = window.innerHeight - previewContainer.offsetHeight;
+
+      newLeft = Math.max(0, Math.min(newLeft, maxL));
+      newTop  = Math.max(0, Math.min(newTop, maxT));
+
+      previewContainer.style.left = newLeft + 'px';
+      previewContainer.style.top  = newTop + 'px';
+    };
+
+    const onMouseUp = () => {
+      if (!isDragging) return;
+      isDragging = false;
+      previewContainer.classList.remove('dragging');
+      
+      // MauseUp -> Listener'ları temizle
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+
+      // Yeni pozisyonu Storage'a yaz (Persistent)
+      const finalLeft = parseInt(previewContainer.style.left, 10);
+      const finalTop  = parseInt(previewContainer.style.top, 10);
+      chrome.storage.local.set({ previewPos: { top: finalTop, left: finalLeft } });
+    };
+
+    previewContainer.addEventListener('mousedown', (e) => {
+      // Sol tık kontrolü
+      if (e.button !== 0) return;
+      
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      
+      const rect = previewContainer.getBoundingClientRect();
+      initialLeft = rect.left;
+      initialTop  = rect.top;
+      
+      // YouTube videosu üzerindeki eventleri ve kaymaları pasif tutmak için active class'ı
+      previewContainer.classList.add('dragging');
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    });
+
     return previewContainer;
   }
 
