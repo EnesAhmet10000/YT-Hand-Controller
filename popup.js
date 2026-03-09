@@ -11,6 +11,7 @@
 const translations = {
   tr: {
     both_hands_open: 'Çift El',
+    both_index_up: 'Çift İşaret Yukarı',
     open_palm: 'Açık El',
     index_up: 'İşaret Yukarı',
     palm_right: 'Sağ Avuç',
@@ -20,6 +21,7 @@ const translations = {
     vulcan: 'Vulcan',
     peace_sign: 'Zafer',
     pinch: 'Çimdik (Önerilmez)',
+
     
     togglePlay: 'Oynat / Durdur',
     toggleFullscreen: 'Tam Ekran',
@@ -35,14 +37,19 @@ const translations = {
     nextVideo: 'Sonraki Video',
     previousVideo: 'Önceki Video',
     volumeControl: 'Ses Seviyesi',
+    dynamicScroll: 'Dinamik Kaydırma (Avuç)',
+    setMaxQuality: 'Kaliteyi Arttır',
+    mouseClick: 'Sol Tık (Left Click)',
     
     gestureSettings: 'Hareket Ayarları',
     statusOn: 'Aktif',
     statusOff: 'Kapalı',
-    statusDenied: 'İzin Reddedildi'
+    statusDenied: 'İzin Reddedildi',
+    airMouse: 'Air Mouse Modu'
   },
   en: {
     both_hands_open: 'Both Hands',
+    both_index_up: 'Both Index Up',
     open_palm: 'Open Palm',
     index_up: 'Index Up',
     palm_right: 'Palm Right',
@@ -52,6 +59,7 @@ const translations = {
     vulcan: 'Vulcan',
     peace_sign: 'Peace Sign',
     pinch: 'Pinch (Not Recommended)',
+
     
     togglePlay: 'Play / Pause',
     toggleFullscreen: 'Fullscreen',
@@ -67,14 +75,19 @@ const translations = {
     nextVideo: 'Next Video',
     previousVideo: 'Previous Video',
     volumeControl: 'Volume Control',
+    dynamicScroll: 'Dynamic Scroll (Palm)',
+    setMaxQuality: 'Increase Quality',
+    mouseClick: 'Left Click',
     
     gestureSettings: 'Gesture Settings',
     statusOn: 'Active',
     statusOff: 'Off',
-    statusDenied: 'Permission Denied'
+    statusDenied: 'Permission Denied',
+    airMouse: 'Air Mouse Mode'
   },
   ar: {
     both_hands_open: 'كلتا اليدين',
+    both_index_up: 'كلا السبابتين لأعلى',
     open_palm: 'كف مفتوح',
     index_up: 'السبابة لأعلى',
     palm_right: 'الكف لليمين',
@@ -84,6 +97,7 @@ const translations = {
     vulcan: 'فولكان',
     peace_sign: 'علامة النصر',
     pinch: 'قرصة (غير مستحسن)',
+
     
     togglePlay: 'تشغيل / إيقاف',
     toggleFullscreen: 'ملء الشاشة',
@@ -99,25 +113,30 @@ const translations = {
     nextVideo: 'الفيديو التالي',
     previousVideo: 'الفيديو السابق',
     volumeControl: 'التحكم بالصوت',
+    dynamicScroll: 'التمرير الديناميكي (كف)',
+    setMaxQuality: 'زيادة الجودة',
+    mouseClick: 'نقر أيسر (Left Click)',
     
     gestureSettings: 'إعدادات الإيماءات',
     statusOn: 'نشط',
     statusOff: 'مغلق',
-    statusDenied: 'تم رفض الإذن'
+    statusDenied: 'تم رفض الإذن',
+    airMouse: 'وضع الماوس الهوائي'
   }
 };
 
 const GESTURES = [
   { key: 'both_hands_open',icon: '👐' },
+  { key: 'both_index_up',  icon: '🙌' },
   { key: 'open_palm',      icon: '✋' },
   { key: 'index_up',       icon: '☝️' },
   { key: 'palm_right',     icon: '🫱' },
   { key: 'palm_left',      icon: '🫲' },
   { key: 'pointing_right', icon: '👉' },
   { key: 'pointing_left',  icon: '👈' },
-  { key: 'vulcan',         icon: '🖖' },
   { key: 'peace_sign',     icon: '✌️' },
   { key: 'pinch',          icon: '🤏' },
+
 ];
 
 const ACTIONS = [
@@ -135,19 +154,22 @@ const ACTIONS = [
   { value: 'nextVideo' },
   { value: 'previousVideo' },
   { value: 'volumeControl' },
+  { value: 'setMaxQuality' },
+  { value: 'mouseClick' },
 ];
 
 const DEFAULT_SETTINGS = {
   both_hands_open:{ enabled: true, action: 'toggleFullscreen'},
+  both_index_up:  { enabled: true, action: 'setMaxQuality' },
   open_palm:      { enabled: true, action: 'togglePlay'    },
   index_up:       { enabled: true, action: 'volumeUp5'     },
-  vulcan:         { enabled: true, action: 'volumeDown5'   },
   palm_right:     { enabled: true, action: 'speedUp'       },
   palm_left:      { enabled: true, action: 'speedDown'     },
   pointing_right: { enabled: true, action: 'seekForward10' },
   pointing_left:  { enabled: true, action: 'seekBackward10'},
   peace_sign:     { enabled: true, action: 'toggleMute'    },
   pinch:          { enabled: true, action: 'volumeControl' },
+
 };
 
 
@@ -158,6 +180,8 @@ const statusLbl    = document.getElementById('statusLabel');
 const settingsDiv  = document.getElementById('gestureSettings');
 const gesturesTitleElem = document.querySelector('.gestures-card h2');
 const langSelect   = document.getElementById('langSelect');
+const airMouseToggle = document.getElementById('airMouseToggle');
+const airMouseLabel  = document.getElementById('airMouseLabel');
 
 let currentLang = 'tr';
 
@@ -176,17 +200,24 @@ toggle.addEventListener('change', async () => {
   if (newState) {
     try {
       // 1. Kamera izni al (eğer yoksa)
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: 640, height: 480 },
-        audio: false,
-      });
-      stream.getTracks().forEach((t) => t.stop()); // İzni aldık, stream'i kapıyoruz
+      let needsPermission = true;
+      try {
+        const perm = await navigator.permissions.query({ name: 'camera' });
+        if (perm && perm.state === 'granted') {
+          needsPermission = false;
+        }
+      } catch (e) { /* ignore */ }
+
+      if (needsPermission) {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: 640, height: 480 },
+          audio: false,
+        });
+        stream.getTracks().forEach((t) => t.stop());
+      }
       
       // 2. Background'a "kamerayı aç" emri ver
-      chrome.runtime.sendMessage(
-        { type: 'SET_CAMERA_STATE', cameraOn: true },
-        (res) => { if (res) updateCameraUI(res.cameraOn); }
-      );
+      chrome.runtime.sendMessage({ type: 'SET_CAMERA_STATE', cameraOn: true });
     } catch (err) {
       console.error('[Popup] İzin hatası:', err);
       toggle.checked = false;
@@ -195,10 +226,13 @@ toggle.addEventListener('change', async () => {
     }
   } else {
     // Kamerayı kapat
-    chrome.runtime.sendMessage(
-      { type: 'SET_CAMERA_STATE', cameraOn: false },
-      (res) => { if (res) updateCameraUI(res.cameraOn); }
-    );
+    chrome.runtime.sendMessage({ type: 'SET_CAMERA_STATE', cameraOn: false });
+  }
+});
+
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.type === 'CAMERA_STATUS_UPDATE') {
+    updateCameraUI(message.active);
   }
 });
 
@@ -297,6 +331,9 @@ function setLanguage(lang, settings) {
   if (gesturesTitleElem) {
     gesturesTitleElem.textContent = translations[lang].gestureSettings;
   }
+  if (airMouseLabel) {
+    airMouseLabel.textContent = translations[lang].airMouse;
+  }
   
   updateCameraUI(toggle.checked);
   
@@ -317,7 +354,9 @@ langSelect.addEventListener('change', (e) => {
 
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Ayarları getir ve UI oluştur
-  chrome.storage.local.get({ language: 'tr', gestureSettings: DEFAULT_SETTINGS }, (data) => {
+  chrome.storage.local.get({ language: 'tr', gestureSettings: DEFAULT_SETTINGS, airMouseEnabled: false }, (data) => {
+    if (airMouseToggle) airMouseToggle.checked = data.airMouseEnabled;
+    
     const settings = { ...DEFAULT_SETTINGS, ...data.gestureSettings };
     if (!data.gestureSettings) {
       chrome.storage.local.set({ gestureSettings: settings });
@@ -329,4 +368,13 @@ document.addEventListener('DOMContentLoaded', () => {
   chrome.runtime.sendMessage({ type: 'GET_CAMERA_STATE' }, (res) => {
     if (res) updateCameraUI(res.cameraOn);
   });
+
+  // 3. Air Mouse Toggle Dinleyicisi
+  if (airMouseToggle) {
+    airMouseToggle.addEventListener('change', () => {
+      chrome.storage.local.set({ airMouseEnabled: airMouseToggle.checked }, () => {
+        chrome.runtime.sendMessage({ type: 'UPDATE_SETTINGS', airMouseEnabled: airMouseToggle.checked });
+      });
+    });
+  }
 });

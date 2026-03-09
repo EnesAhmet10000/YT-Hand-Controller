@@ -88,6 +88,12 @@ En güncel **Manifest V3** standartlarıyla inşa edilen eklenti, üçlü bir mi
 - **`offscreen.js` (Görünmez Sürücü)**: Ağır işlerin yapıldığı kısımdır. Kameraya erişir, MediaPipe WebAssembly'i yükler ve ~30 FPS hızda el hareketlerini yüksek doğrulukla arka planda hesaplar. Duruş bozukluklarını (derinlik / uzaklık) ekarte etmek için x ekseni sapmalarını değil doğrudan bilek-parmak arasındaki eksen açısını **(Trigonometri ile)** hesaplayan güncel bir algoritmaya sahiptir.
 - **`content.js` (İçerik Betiği)**: Doğrudan YouTube sayfasının içine yerleşir. Olayları dinler, YouTube'un HTML5 `<video>` elementine müdahale ederek eylemleri yansıtır ve size o şık kullanıcı arayüzünü (Toast, Progress vb.) çizer.
 
+## 🆕 Son Güncellemeler (Latest Updates)
+
+- **Çoklu Dil Desteği (I18N):** Popup arayüzüne dil seçimi (Türkçe, İngilizce, Arapça) eklendi ve RTL desteği sağlandı.
+- **Tam Senkronizasyon (Durum Yönetimi):** Kamera Açık/Kapalı durumu artık arkaplan (background.js), görünmez sayfa (offscreen.js) ve menü (popup.html) arasında kusursuz bir şekilde senkronize çalışıyor.
+- **Hata Düzeltmeleri & İyileştirmeler:** İşaret parmağı (👉/👈) ve Barış (✌️) işareti arasındaki algılama sorunları katı kurallarla çözüldü, WebGL hataları giderildi.
+
 ## 🤝 Katkıda Bulunma
 
 Projeyi geliştirmeye, hataları (issues) bildirmeye veya yeni özellikler eklemeye sonuna kadar açığız. Bir yıldız (⭐️) vermeyi unutmayın!

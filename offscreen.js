@@ -93,10 +93,23 @@
     return isLeft && isMiddleClosed && isRingClosed && isPinkyClosed;
   }
 
+  function isMouseActive(lm) {
+    const isPinchClosed = euclidean(lm[8], lm[4]) < 0.04;
+    const isMiddleOpen = lm[12].y < lm[10].y;
+    const isRingOpen = lm[16].y < lm[14].y;
+    const isPinkyOpen = lm[20].y < lm[18].y;
+    return isPinchClosed && isMiddleOpen && isRingOpen && isPinkyOpen;
+  }
+
   function isIndexUp(lm) {
     const indexOpen = lm[8].y < lm[6].y;
     const othersClosed = lm[12].y > lm[10].y && lm[16].y > lm[14].y && lm[20].y > lm[18].y;
     return indexOpen && othersClosed;
+  }
+
+  function isBothIndexUp(lm, results) {
+    if (!results || !results.multiHandLandmarks || results.multiHandLandmarks.length !== 2) return false;
+    return isIndexUp(results.multiHandLandmarks[0]) && isIndexUp(results.multiHandLandmarks[1]);
   }
 
   function getPinchDistance(lm) {
@@ -123,17 +136,6 @@
            lm[16].x < lm[14].x && lm[20].x < lm[18].x;
   }
 
-  function isVulcan(lm) {
-    // İşaret(8) ve Orta(12) açık ve bitişik mi
-    const firstGroupOpen = lm[8].y < lm[6].y && lm[12].y < lm[10].y && Math.abs(lm[8].x - lm[12].x) < 0.1;
-    // Yüzük(16) ve Serçe(20) açık ve bitişik mi
-    const secondGroupOpen = lm[16].y < lm[14].y && lm[20].y < lm[18].y && Math.abs(lm[16].x - lm[20].x) < 0.1;
-    // İki grup biribirinden ayrık olmalı (Spock hareketi) "V" şeklinde
-    const isSeparated = Math.abs(lm[12].x - lm[16].x) > 0.05;
-
-    return firstGroupOpen && secondGroupOpen && isSeparated;
-  }
-
   function isPeaceSign(lm) {
     // Hem İşaret (8) hem de Orta (12) KESİN açık olmalı. Orta parmak kapalıysa ASLA Peace Sign olamaz.
     const mainOpen = lm[8].y < lm[6].y && lm[12].y < lm[10].y;
@@ -149,13 +151,13 @@
 
   const GESTURE_TABLE = [
     { key: 'both_hands_open',recognize: isBothHandsOpen, icon: '👐', name: 'Both_Hands'     },
+    { key: 'both_index_up',  recognize: isBothIndexUp,   icon: '🙌', name: 'Both_Index_Up'  },
     { key: 'open_palm',      recognize: isOpenPalm,      icon: '✋', name: 'Open_Palm'      },
     { key: 'index_up',       recognize: isIndexUp,       icon: '☝️', name: 'Index_Up'       },
     { key: 'palm_right',     recognize: isPalmRight,     icon: '🫱', name: 'Palm_Right'     },
     { key: 'palm_left',      recognize: isPalmLeft,      icon: '🫲', name: 'Palm_Left'      },
     { key: 'pointing_right', recognize: isPointingRight, icon: '👉', name: 'Pointing_Right' },
     { key: 'pointing_left',  recognize: isPointingLeft,  icon: '👈', name: 'Pointing_Left'  },
-    { key: 'vulcan',         recognize: isVulcan,        icon: '🖖', name: 'Vulcan'         },
     { key: 'peace_sign',     recognize: isPeaceSign,     icon: '✌️', name: 'Peace_Sign'     },
   ];
 
@@ -171,9 +173,9 @@
 
   const DEFAULT_SETTINGS = {
     both_hands_open:{ enabled: true, action: 'toggleFullscreen'},
+    both_index_up:  { enabled: true, action: 'setMaxQuality' },
     open_palm:      { enabled: true, action: 'togglePlay'    },
     index_up:       { enabled: true, action: 'volumeUp5'     },
-    vulcan:         { enabled: true, action: 'volumeDown5'   },
     palm_right:     { enabled: true, action: 'speedUp'       },
     palm_left:      { enabled: true, action: 'speedDown'     },
     pointing_right: { enabled: true, action: 'seekForward10' },
@@ -186,10 +188,10 @@
 
 
   // ═══════════════════════════════════════════════════════════════════════════
-  //  D. DWELL TIME CONTROLLER — Midas Touch Koruması (600ms) + Cooldown
+  //  D. DWELL TIME CONTROLLER — Midas Touch Koruması + Cooldown
   // ═══════════════════════════════════════════════════════════════════════════
 
-  const DWELL_MS = 600;
+  const DEFAULT_DWELL_MS = 600;
   let dwellState = { currentGesture: null, startTime: 0, fired: false };
 
   let lastActionTime = 0;
@@ -205,8 +207,10 @@
       dwellState.fired = false;
     }
 
+    // Tıklamanın (Left Click) fare hızında olması için dolum süresi (Dwell) daha kısadır
+    const requiredDwell = setting.action === 'mouseClick' ? 250 : DEFAULT_DWELL_MS;
     const elapsed  = now - dwellState.startTime;
-    const progress = Math.min(elapsed / DWELL_MS, 1.0);
+    const progress = Math.min(elapsed / requiredDwell, 1.0);
 
     sendMsg({
       type: 'GESTURE_DWELL',
@@ -219,7 +223,9 @@
       // Eyleme özel cooldown hesapla
       let cooldown = DEFAULT_COOLDOWN;
       if (gesture.key === 'both_hands_open') cooldown = 2000;
-      if (setting.action === 'volumeUp5' || setting.action === 'volumeDown5') cooldown = 400; // Akıcı ses kontrolü için kısa cooldown
+      if (setting.action === 'setMaxQuality') cooldown = 3000; // Çift parmak kalite ayarı için uzun bekleme
+      if (setting.action === 'volumeUp5' || setting.action === 'volumeDown5') cooldown = 400;
+      if (setting.action === 'mouseClick') cooldown = 300; // Hızlı tıklama için kısa cooldown
       
       if (now - lastActionTime < cooldown) return;
 
@@ -255,6 +261,9 @@
   let isRunning     = false;
   let frameTimer    = null;
 
+  let airMouseEnabled = false;
+  let airMouseState = { active: false, lastX: 0, lastY: 0, stationaryTime: 0, lastPinchEndTime: 0 };
+
   async function startCamera() {
     if (isRunning) return;
     console.log('[Offscreen] Kamera başlatılıyor...');
@@ -286,10 +295,12 @@
 
       isRunning = true;
       console.log('[Offscreen] Kamera + MediaPipe başlatıldı.');
+      sendMsg({ type: 'CAMERA_STATUS', active: true });
       processFrame();
 
     } catch (err) {
       console.error('[Offscreen] Kamera hatası:', err);
+      sendMsg({ type: 'CAMERA_STATUS', active: false });
     }
   }
 
@@ -312,6 +323,26 @@
     }
 
     const landmarks = results.multiHandLandmarks[0];
+
+    // AIR MOUSE Priority Check (Hiyerarşi 1)
+    if (airMouseEnabled && isMouseActive(landmarks) && results.multiHandLandmarks.length === 1) {
+      const currentX = (landmarks[8].x + landmarks[4].x) / 2;
+      const currentY = (landmarks[8].y + landmarks[4].y) / 2;
+
+      if (!airMouseState.active) {
+        airMouseState.active = true;
+      }
+
+      sendMsg({ type: 'MOUSE_MOVE', x: currentX, y: currentY });
+      airMouseState.lastX = currentX;
+      airMouseState.lastY = currentY;
+      resetDwell();
+      return;
+    } else {
+      if (airMouseState.active) {
+        airMouseState.active = false;
+      }
+    }
 
     // Pinch (Continuous)
     const pinchSetting = gestureSettings[PINCH_CONFIG.key];
@@ -354,7 +385,7 @@
 
     // Hiyerarşik Eşleşme: "Orta Parmak Kilidi" prensibiyle Peace(V) mutlaka Pointing(👉/👈) öncesinde sorgulanmalı.
     if (processGesture('both_hands_open', isBothHandsOpen)) { /* matched */ }
-    else if (processGesture('vulcan', isVulcan)) { /* matched */ }
+    else if (processGesture('both_index_up', isBothIndexUp)) { /* matched */ }
     else if (processGesture('peace_sign', isPeaceSign)) { /* matched */ } // Orta parmak kapalıysa burayı atlar
     else if (processGesture('index_up', isIndexUp)) { /* matched */ }
     else if (processGesture('pointing_right', isPointingRight)) { /* matched */ } // İşaret var, Orta/Yüzük/Serçe kapalı
@@ -369,10 +400,22 @@
   function stopCamera() {
     isRunning = false;
     if (frameTimer) { clearTimeout(frameTimer); frameTimer = null; }
-    if (handsInstance) { handsInstance.close(); handsInstance = null; }
-    if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+    
+    // ÖNCELİKLE donanım kaynaklarını serbest bırak (Kamera lambasını anında kapatır)
+    if (cameraStream) { 
+        cameraStream.getTracks().forEach(t => t.stop()); 
+        cameraStream = null; 
+    }
     if (cameraVideo) { cameraVideo.srcObject = null; }
-    console.log('[Offscreen] Kamera kapatıldı.');
+    
+    try {
+        if (handsInstance) { handsInstance.close(); handsInstance = null; }
+    } catch (e) {
+        // MediaPipe kapatma esnasında bir hata fırlatırsa yutuyoruz
+    }
+    
+    console.log('[Offscreen] Kamera tamamen kapatıldı.');
+    sendMsg({ type: 'CAMERA_STATUS', active: false });
   }
 
 
@@ -392,11 +435,14 @@
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'START_CAMERA') {
+      if (message.gestureSettings) gestureSettings = { ...DEFAULT_SETTINGS, ...message.gestureSettings };
+      if (message.airMouseEnabled !== undefined) airMouseEnabled = message.airMouseEnabled;
       startCamera();
     } else if (message.type === 'STOP_CAMERA') {
       stopCamera();
-    } else if (message.type === 'UPDATE_SETTINGS' && message.gestureSettings) {
-      gestureSettings = { ...DEFAULT_SETTINGS, ...message.gestureSettings };
+    } else if (message.type === 'UPDATE_SETTINGS') {
+      if (message.gestureSettings) gestureSettings = { ...DEFAULT_SETTINGS, ...message.gestureSettings };
+      if (message.airMouseEnabled !== undefined) airMouseEnabled = message.airMouseEnabled;
       console.log('[Offscreen] Ayarlar güncellendi.');
     }
     sendResponse({ status: 'ok' });

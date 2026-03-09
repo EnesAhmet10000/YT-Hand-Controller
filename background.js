@@ -13,6 +13,8 @@
  */
 
 // ─── Offscreen Document Management ─────────────────────────────────────────────
+let isCameraActive = false;
+let intendedCameraState = false;
 
 const OFFSCREEN_URL = 'offscreen.html';
 
@@ -86,11 +88,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
-  // Offscreen → Background → Content Script mesaj yönlendirme
+  if (message.type === 'CAMERA_STATUS') {
+    isCameraActive = message.active;
+    chrome.storage.local.set({ cameraOn: message.active }); // Storage'ı gerçek duruma eşitle
+    safeSendMessage({ type: 'CAMERA_STATUS_UPDATE', active: message.active });
+    broadcastToYouTubeTabs(message.active);
+    sendResponse({ status: 'ok' });
+    return true;
+  }
+
   if (
     message.type === 'GESTURE_ACTION' ||
     message.type === 'GESTURE_DWELL' ||
-    message.type === 'GESTURE_RESET'
+    message.type === 'GESTURE_RESET' ||
+    message.type === 'MOUSE_MOVE' ||
+    message.type === 'MOUSE_CLICK'
   ) {
     forwardToActiveYouTubeTab(message);
     sendResponse({ status: 'ok' });
@@ -108,40 +120,39 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 // ─── State Handlers ────────────────────────────────────────────────────────────
 
 /**
- * Mevcut kamera durumunu chrome.storage.local'dan okur ve döndürür.
+ * Mevcut kamera durumunu bellekteki Global State'den (veya varsayılan olarak) okur.
  */
 function handleGetState(sendResponse) {
-  chrome.storage.local.get({ cameraOn: false }, (data) => {
-    sendResponse({ cameraOn: data.cameraOn });
-  });
+  sendResponse({ cameraOn: isCameraActive });
 }
 
 /**
  * Kamera durumunu günceller ve Offscreen document'ı yönetir.
  */
 async function handleSetState(message, sendResponse) {
-  const newState = message.cameraOn;
-  chrome.storage.local.set({ cameraOn: newState });
+  intendedCameraState = message.cameraOn;
 
-  if (newState) {
-    // Kamera açılıyor: Offscreen document oluştur
-    await ensureOffscreenDocument();
-    // Offscreen'in tamamen yüklenmesini bekle (1 sn)
-    await new Promise((r) => setTimeout(r, 1000));
-    // Güvenli mesaj gönderimi
-    safeSendMessage({ type: 'START_CAMERA' });
+  if (message.cameraOn) {
+    try { await ensureOffscreenDocument(); } catch(e) {}
+    await new Promise((r) => setTimeout(r, 800)); // Offscreen bekle
+    
+    // Yükleme süresi boyunca kullanıcı kamerayı geri KAPATMIŞ olabilir mi?
+    if (intendedCameraState) {
+      const data = await chrome.storage.local.get({ gestureSettings: null, airMouseEnabled: false });
+      safeSendMessage({ type: 'START_CAMERA', gestureSettings: data.gestureSettings, airMouseEnabled: data.airMouseEnabled });
+    }
   } else {
-    // Kamera kapanıyor
     safeSendMessage({ type: 'STOP_CAMERA' });
-    // Kısa gecikme ile kameranın kapanmasını bekle, sonra offscreen'i kapat
+    
     setTimeout(async () => {
-      await closeOffscreenDocument();
+      // Beklerken kullanıcı kamerayı geri AÇMIŞ olabilir mi?
+      if (!intendedCameraState) {
+        try { await closeOffscreenDocument(); } catch(e) {}
+      }
     }, 500);
   }
 
-  // Content script'lere de state değişikliğini bildir
-  broadcastToYouTubeTabs(newState);
-  sendResponse({ cameraOn: newState });
+  sendResponse({ pending: true });
 }
 
 

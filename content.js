@@ -22,9 +22,10 @@
       next: '⏭ Sonraki Video', prev: '⏮ Önceki Video',
       fsOn: '📺 Tam Ekran', fsOff: '📱 Normal Ekran', vol: 'Ses',
       active: '🖐 El Kontrolü Aktif',
-      Both_Hands: 'Çift El', Open_Palm: 'Açık El', Index_Up: 'İşaret Yukarı',
+      Both_Hands: 'Çift El', Both_Index_Up: 'Çift İşaret Yukarı', Open_Palm: 'Açık El', Index_Up: 'İşaret Yukarı',
       Palm_Right: 'Sağ Avuç', Palm_Left: 'Sol Avuç', Pointing_Right: 'Sağa İşaret',
-      Pointing_Left: 'Sola İşaret', Vulcan: 'Vulcan', Peace_Sign: 'Zafer', Pinch_Volume: 'Çimdik'
+      Pointing_Left: 'Sola İşaret', Peace_Sign: 'Zafer', Pinch_Volume: 'Çimdik',
+      leftClick: 'Sol Tıklandı', setMaxQuality: 'Kalite Arttırılıyor...'
     },
     en: {
       play: '▶ Playing', pause: '⏸ Paused', speed: 'Speed',
@@ -33,9 +34,10 @@
       next: '⏭ Next Video', prev: '⏮ Previous Video',
       fsOn: '📺 Fullscreen', fsOff: '📱 Normal Screen', vol: 'Volume',
       active: '🖐 Hand Control Active',
-      Both_Hands: 'Both Hands', Open_Palm: 'Open Palm', Index_Up: 'Index Up',
+      Both_Hands: 'Both Hands', Both_Index_Up: 'Both Index Up', Open_Palm: 'Open Palm', Index_Up: 'Index Up',
       Palm_Right: 'Palm Right', Palm_Left: 'Palm Left', Pointing_Right: 'Point Right',
-      Pointing_Left: 'Point Left', Vulcan: 'Vulcan', Peace_Sign: 'Peace Sign', Pinch_Volume: 'Pinch'
+      Pointing_Left: 'Point Left', Peace_Sign: 'Peace Sign', Pinch_Volume: 'Pinch',
+      leftClick: 'Left Click', setMaxQuality: 'Increasing Quality...'
     },
     ar: {
       play: '▶ تشغيل', pause: '⏸ إيقاف مؤقت', speed: 'السرعة',
@@ -44,9 +46,10 @@
       next: '⏭ الفيديو التالي', prev: '⏮ الفيديو السابق',
       fsOn: '📺 ملء الشاشة', fsOff: '📱 شاشة عادية', vol: 'الصوت',
       active: '🖐 التحكم باليد نشط',
-      Both_Hands: 'كلتا اليدين', Open_Palm: 'كف مفتوح', Index_Up: 'السبابة لأعلى',
+      Both_Hands: 'كلتا اليدين', Both_Index_Up: 'كلا السبابتين لأعلى', Open_Palm: 'كف مفتوح', Index_Up: 'السبابة لأعلى',
       Palm_Right: 'الكف لليمين', Palm_Left: 'الكف لليسار', Pointing_Right: 'إشارة لليمين',
-      Pointing_Left: 'إشارة لليسار', Vulcan: 'فولكان', Peace_Sign: 'علامة النصر', Pinch_Volume: 'قرصة'
+      Pointing_Left: 'إشارة لليسار', Peace_Sign: 'علامة النصر', Pinch_Volume: 'قرصة',
+      leftClick: 'تم النقر', setMaxQuality: 'جاري زيادة الجودة...'
     }
   };
   let currentLang = 'tr';
@@ -120,6 +123,7 @@
       }
       return I18N[currentLang].prev;
     },
+
     toggleFullscreen: (video) => {
       const fullScreenBtn = document.querySelector('.ytp-fullscreen-button');
       if (fullScreenBtn) {
@@ -135,12 +139,124 @@
       }
       return null; // Volume UI ayrı yönetilir
     },
+    mouseClick: (video) => {
+      const elem = document.elementFromPoint(currentMouseX, currentMouseY);
+      if (elem) {
+        if (typeof elem.click === 'function') {
+          elem.click();
+        } else {
+          const evnt = new MouseEvent('click', { bubbles: true, cancelable: true, view: window });
+          elem.dispatchEvent(evnt);
+        }
+      }
+      if (virtualCursor) {
+        virtualCursor.classList.add('click-anim');
+        setTimeout(() => virtualCursor.classList.remove('click-anim'), 200);
+      }
+      return I18N[currentLang].leftClick;
+    },
+    setMaxQuality: (video) => {
+      const settingsBtn = document.querySelector('.ytp-settings-button');
+      if (!settingsBtn) return null;
+      settingsBtn.click();
+      
+      setTimeout(() => {
+        const menuItems = Array.from(document.querySelectorAll('.ytp-panel-menu .ytp-menuitem'));
+        let qualityBtn = menuItems.find(item => item.innerText.match(/Quality|Kalite|الجودة|Qualité|Kvalitet|\d+p/i));
+        if (!qualityBtn && menuItems.length > 0) qualityBtn = menuItems[menuItems.length - 1]; 
+        
+        if (qualityBtn) {
+          qualityBtn.click();
+          setTimeout(() => {
+            const qualityOptions = Array.from(document.querySelectorAll('.ytp-panel-menu .ytp-menuitem'));
+            // Otomatik seçeneği (en üstteki veya listeyi bozan) hariç, sadece p değerli çözünürlükleri al
+            const validOptions = qualityOptions.filter(opt => opt.innerText.match(/\d+p/i));
+            
+            if (validOptions.length > 0) {
+              // Şu anki aktif kaliteyi bul (aria-checked="true" ile işaretlenir)
+              let currentIndex = validOptions.findIndex(opt => opt.getAttribute('aria-checked') === 'true');
+              
+              if (currentIndex === -1) {
+                // Hiçbiri seçili değilse muhtemelen Auto'dadır. Auto genelde ortalama veya düşük değerde olduğundan,
+                // listeyi tarayıp en mantıklı orta kademeyi veya ilkini varsayabiliriz.
+                currentIndex = Math.floor(validOptions.length / 2);
+              }
+
+              // YouTube listesi genelde üstten aşağıya yüksekten düşüğe doğru sıralanır (Örn: 1080p, 720p, 480p).
+              // "Bir kademe yükselt" = İndeksi 1 azalt (ama 0'ın altına düşme).
+              const targetIndex = Math.max(0, currentIndex - 1);
+              const targetOption = validOptions[targetIndex];
+              
+              if (targetOption) {
+                targetOption.click();
+              } else {
+                settingsBtn.click(); // Geri kapat
+              }
+            } else {
+               settingsBtn.click(); 
+            }
+          }, 250);
+        } else {
+          settingsBtn.click();
+        }
+      }, 250);
+      return I18N[currentLang].setMaxQuality;
+    },
   };
 
 
   // ═══════════════════════════════════════════════════════════════════════════
-  //  C. OVERLAY UI — DOM Enjeksiyonları
+  //  C. OVERLAY UI & VIRTUAL CURSOR — DOM Enjeksiyonları
   // ═══════════════════════════════════════════════════════════════════════════
+
+  let virtualCursor = null;
+  let targetMouseX = window.innerWidth / 2;
+  let targetMouseY = window.innerHeight / 2;
+  let currentMouseX = window.innerWidth / 2;
+  let currentMouseY = window.innerHeight / 2;
+  let mouseHideTimer = null;
+
+  function initVirtualCursor() {
+    if (document.getElementById('yt-virtual-cursor')) return;
+    virtualCursor = document.createElement('div');
+    virtualCursor.id = 'yt-virtual-cursor';
+    virtualCursor.innerHTML = `
+      <style>
+        #yt-virtual-cursor {
+          position: fixed;
+          top: 0; left: 0;
+          width: 24px; height: 24px;
+          border-radius: 50%;
+          background: rgba(108, 92, 231, 0.85);
+          backdrop-filter: blur(4px);
+          border: 2px solid white;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+          pointer-events: none;
+          z-index: 9999999;
+          transform: translate(-50%, -50%);
+          display: none;
+        }
+        #yt-virtual-cursor.click-anim {
+          background: #ff7675;
+          transform: translate(-50%, -50%) scale(0.6);
+          transition: transform 0.15s ease, background 0.15s ease;
+        }
+      </style>
+    `;
+    document.body.appendChild(virtualCursor);
+    requestAnimationFrame(renderCursor);
+  }
+
+  function renderCursor() {
+    if (!virtualCursor) return;
+    currentMouseX += (targetMouseX - currentMouseX) * 0.3;
+    currentMouseY += (targetMouseY - currentMouseY) * 0.3;
+
+    virtualCursor.style.left = currentMouseX + 'px';
+    virtualCursor.style.top = currentMouseY + 'px';
+
+    requestAnimationFrame(renderCursor);
+  }
 
   const OVERLAY_ID  = 'yt-handcontrol-overlay';
   const TOAST_ID    = 'yt-handcontrol-toast';
@@ -317,6 +433,41 @@
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Mesajın işlendiğini onaylamak için hemen yanıt dön (connection hang önlemek için)
     const handleMessage = () => {
+      // Air Mouse
+      if (message.type === 'MOUSE_MOVE') {
+        if (!virtualCursor) {
+          initVirtualCursor();
+        }
+        virtualCursor.style.display = 'block';
+        
+        targetMouseX = message.x * window.innerWidth;
+        targetMouseY = message.y * window.innerHeight;
+        
+        clearTimeout(mouseHideTimer);
+        mouseHideTimer = setTimeout(() => {
+           if (virtualCursor) virtualCursor.style.display = 'none';
+        }, 1500);
+        return;
+      }
+
+      if (message.type === 'MOUSE_CLICK') {
+         if (virtualCursor) {
+           virtualCursor.classList.add('click-anim');
+           setTimeout(() => virtualCursor.classList.remove('click-anim'), 200);
+         }
+         
+         const elem = document.elementFromPoint(currentMouseX, currentMouseY);
+         if (elem) {
+           if (typeof elem.click === 'function') {
+             elem.click();
+           } else {
+             const evnt = new MouseEvent('click', { bubbles: true, cancelable: true, view: window });
+             elem.dispatchEvent(evnt);
+           }
+         }
+         return;
+      }
+
       // Kamera state
       if (message.type === 'CAMERA_STATE_CHANGED') {
         if (message.cameraOn) {
