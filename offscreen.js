@@ -112,6 +112,20 @@
     return isIndexUp(results.multiHandLandmarks[0]) && isIndexUp(results.multiHandLandmarks[1]);
   }
 
+  function isIndexDown(lm) {
+    const indexOpenDown = lm[8].y > (lm[6].y + 0.05);
+    const isMiddleClosed = euclidean(lm[12], lm[0]) < euclidean(lm[10], lm[0]);
+    const isRingClosed   = euclidean(lm[16], lm[0]) < euclidean(lm[14], lm[0]);
+    const isPinkyClosed  = euclidean(lm[20], lm[0]) < euclidean(lm[18], lm[0]);
+    return indexOpenDown && isMiddleClosed && isRingClosed && isPinkyClosed;
+  }
+
+  function isBothIndexDown(lm, results) {
+    if (!results || !results.multiHandLandmarks || results.multiHandLandmarks.length !== 2) return false;
+    return isIndexDown(results.multiHandLandmarks[0]) && isIndexDown(results.multiHandLandmarks[1]);
+  }
+
+
   function getPinchDistance(lm) {
     return euclidean(lm[4], lm[8]);
   }
@@ -152,8 +166,10 @@
   const GESTURE_TABLE = [
     { key: 'both_hands_open',recognize: isBothHandsOpen, icon: '👐', name: 'Both_Hands'     },
     { key: 'both_index_up',  recognize: isBothIndexUp,   icon: '🙌', name: 'Both_Index_Up'  },
+    { key: 'both_index_down',recognize: isBothIndexDown, icon: '👇👇', name: 'Both_Index_Down'},
     { key: 'open_palm',      recognize: isOpenPalm,      icon: '✋', name: 'Open_Palm'      },
     { key: 'index_up',       recognize: isIndexUp,       icon: '☝️', name: 'Index_Up'       },
+    { key: 'index_down',     recognize: isIndexDown,     icon: '👇', name: 'Index_Down'     },
     { key: 'palm_right',     recognize: isPalmRight,     icon: '🫱', name: 'Palm_Right'     },
     { key: 'palm_left',      recognize: isPalmLeft,      icon: '🫲', name: 'Palm_Left'      },
     { key: 'pointing_right', recognize: isPointingRight, icon: '👉', name: 'Pointing_Right' },
@@ -174,8 +190,10 @@
   const DEFAULT_SETTINGS = {
     both_hands_open:{ enabled: true, action: 'toggleFullscreen'},
     both_index_up:  { enabled: true, action: 'setMaxQuality' },
+    both_index_down:{ enabled: true, action: 'decreaseQualityOneStep' },
     open_palm:      { enabled: true, action: 'togglePlay'    },
     index_up:       { enabled: true, action: 'volumeUp5'     },
+    index_down:     { enabled: true, action: 'volumeDown5'   },
     palm_right:     { enabled: true, action: 'speedUp'       },
     palm_left:      { enabled: true, action: 'speedDown'     },
     pointing_right: { enabled: true, action: 'seekForward10' },
@@ -223,7 +241,8 @@
       // Eyleme özel cooldown hesapla
       let cooldown = DEFAULT_COOLDOWN;
       if (gesture.key === 'both_hands_open') cooldown = 2000;
-      if (setting.action === 'setMaxQuality') cooldown = 3000; // Çift parmak kalite ayarı için uzun bekleme
+      if (gesture.key === 'both_index_up' || gesture.key === 'both_index_down') cooldown = 2500;
+      if (setting.action === 'setMaxQuality' || setting.action === 'decreaseQualityOneStep') cooldown = 2500;
       if (setting.action === 'volumeUp5' || setting.action === 'volumeDown5') cooldown = 400;
       if (setting.action === 'mouseClick') cooldown = 300; // Hızlı tıklama için kısa cooldown
       
@@ -386,8 +405,10 @@
     // Hiyerarşik Eşleşme: "Orta Parmak Kilidi" prensibiyle Peace(V) mutlaka Pointing(👉/👈) öncesinde sorgulanmalı.
     if (processGesture('both_hands_open', isBothHandsOpen)) { /* matched */ }
     else if (processGesture('both_index_up', isBothIndexUp)) { /* matched */ }
+    else if (processGesture('both_index_down', isBothIndexDown)) { /* matched */ }
     else if (processGesture('peace_sign', isPeaceSign)) { /* matched */ } // Orta parmak kapalıysa burayı atlar
     else if (processGesture('index_up', isIndexUp)) { /* matched */ }
+    else if (processGesture('index_down', isIndexDown)) { /* matched */ }
     else if (processGesture('pointing_right', isPointingRight)) { /* matched */ } // İşaret var, Orta/Yüzük/Serçe kapalı
     else if (processGesture('pointing_left', isPointingLeft)) { /* matched */ }
     else if (processGesture('palm_right', isPalmRight)) { /* matched */ }

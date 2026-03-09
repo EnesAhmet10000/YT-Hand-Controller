@@ -12,8 +12,10 @@ const translations = {
   tr: {
     both_hands_open: 'Çift El',
     both_index_up: 'Çift İşaret Yukarı',
+    both_index_down: 'Çift İşaret Aşağı',
     open_palm: 'Açık El',
     index_up: 'İşaret Yukarı',
+    index_down: 'İşaret Aşağı',
     palm_right: 'Sağ Avuç',
     palm_left: 'Sol Avuç',
     pointing_right: 'Sağa İşaret',
@@ -39,6 +41,7 @@ const translations = {
     volumeControl: 'Ses Seviyesi',
     dynamicScroll: 'Dinamik Kaydırma (Avuç)',
     setMaxQuality: 'Kaliteyi Arttır',
+    decreaseQualityOneStep: 'Kalite Düşür',
     mouseClick: 'Sol Tık (Left Click)',
     
     gestureSettings: 'Hareket Ayarları',
@@ -50,8 +53,10 @@ const translations = {
   en: {
     both_hands_open: 'Both Hands',
     both_index_up: 'Both Index Up',
+    both_index_down: 'Both Index Down',
     open_palm: 'Open Palm',
     index_up: 'Index Up',
+    index_down: 'Index Down',
     palm_right: 'Palm Right',
     palm_left: 'Palm Left',
     pointing_right: 'Point Right',
@@ -77,6 +82,7 @@ const translations = {
     volumeControl: 'Volume Control',
     dynamicScroll: 'Dynamic Scroll (Palm)',
     setMaxQuality: 'Increase Quality',
+    decreaseQualityOneStep: 'Decrease Quality',
     mouseClick: 'Left Click',
     
     gestureSettings: 'Gesture Settings',
@@ -88,8 +94,10 @@ const translations = {
   ar: {
     both_hands_open: 'كلتا اليدين',
     both_index_up: 'كلا السبابتين لأعلى',
+    both_index_down: 'كلا السبابتين لأسفل',
     open_palm: 'كف مفتوح',
     index_up: 'السبابة لأعلى',
+    index_down: 'السبابة لأسفل',
     palm_right: 'الكف لليمين',
     palm_left: 'الكف لليسار',
     pointing_right: 'إشارة لليمين',
@@ -115,6 +123,7 @@ const translations = {
     volumeControl: 'التحكم بالصوت',
     dynamicScroll: 'التمرير الديناميكي (كف)',
     setMaxQuality: 'زيادة الجودة',
+    decreaseQualityOneStep: 'تخفيض الجودة',
     mouseClick: 'نقر أيسر (Left Click)',
     
     gestureSettings: 'إعدادات الإيماءات',
@@ -127,9 +136,11 @@ const translations = {
 
 const GESTURES = [
   { key: 'both_hands_open',icon: '👐' },
-  { key: 'both_index_up',  icon: '🙌' },
+  { key: 'both_index_up',  icon: '☝️+☝️' },
+  { key: 'both_index_down',icon: '👇+👇' },
   { key: 'open_palm',      icon: '✋' },
   { key: 'index_up',       icon: '☝️' },
+  { key: 'index_down',     icon: '👇' },
   { key: 'palm_right',     icon: '🫱' },
   { key: 'palm_left',      icon: '🫲' },
   { key: 'pointing_right', icon: '👉' },
@@ -155,14 +166,17 @@ const ACTIONS = [
   { value: 'previousVideo' },
   { value: 'volumeControl' },
   { value: 'setMaxQuality' },
+  { value: 'decreaseQualityOneStep' },
   { value: 'mouseClick' },
 ];
 
 const DEFAULT_SETTINGS = {
   both_hands_open:{ enabled: true, action: 'toggleFullscreen'},
   both_index_up:  { enabled: true, action: 'setMaxQuality' },
+  both_index_down:{ enabled: true, action: 'decreaseQualityOneStep' },
   open_palm:      { enabled: true, action: 'togglePlay'    },
   index_up:       { enabled: true, action: 'volumeUp5'     },
+  index_down:     { enabled: true, action: 'volumeDown5'   },
   palm_right:     { enabled: true, action: 'speedUp'       },
   palm_left:      { enabled: true, action: 'speedDown'     },
   pointing_right: { enabled: true, action: 'seekForward10' },

@@ -38,9 +38,11 @@ Elleriniz yemekten kirlenmiş de olsa, resim yaparken fırçayı bırakmak istem
 | :--------------------- | :---: | :--------------------- | :------------------------------------------------------------------------------------------------------ |
 | **Çift El**            |  👐   | **Tam Ekran**          | İki elinizi açık ve yan yana tutarak videoyu tam ekran moduna geçirin veya çıkın.                       |
 | **Çift İşaret Yukarı** |  🙌   | **Kaliteyi Arttır**    | İki elinizin de işaret parmağını havaya kaldırarak video kalitesini en yüksek (Maximum) seviyeye çeker. |
+| **Çift İşaret Aşağı**  | 👇👇  | **Kalite Düşür**       | İki elinizin de işaret parmağını aşağı göstererek video kalitesini bir kademe düşürün.                  |
 | **Çimdik (Önerilmez)** |  🤏   | **Gerçek Zamanlı Ses** | İşaret ile başparmağınızı birbirine yaklaştırarak sesi kısın ya da uzaklaştırarak açın.                 |
 | **Açık El**            |  ✋   | **Oynat / Duraklat**   | Videoyu durdurmak veya oynatmak için düz ve açık bir el gösterin.                                       |
 | **İşaret Yukarı**      |  ☝️   | **Sesi %5 Artır**      | Sadece işaret parmağınızı havaya kaldırarak videonun sesini azar azar yükseltin.                        |
+| **İşaret Aşağı**       |  👇   | **Sesi %5 Azalt**      | Sadece işaret parmağınızı aşağı doğru göstererek videonun sesini azar azar kısın.                       |
 | **Vulcan**             |  🖖   | **Sesi %5 Azalt**      | Meşhur Uzay Yolu (Spock) selamını vererek sesi azar azar kısın.                                         |
 | **Sağ / Sol Avuç**     | 🫱/🫲 | **Hızlandır/Yavaşlat** | Avuç içinizi yana çevirerek videonun oynatma hızını ±0.25 oranında artırıp azaltın.                     |
 | **Sağa / Sola İşaret** | 👉/👈 | **10 Sn İleri/Geri**   | İşaret parmağınızla yön belirterek videoyu hızlıca 10 saniye atlatın.                                   |
@@ -98,7 +100,8 @@ En güncel **Manifest V3** standartlarıyla inşa edilen eklenti, üçlü bir mi
 
 - **Çoklu Dil Desteği (I18N):** Popup arayüzüne dil seçimi (Türkçe, İngilizce, Arapça) eklendi ve RTL desteği sağlandı.
 - **Air Mouse Özelliği:** Sanal imleç desteği getirilerek, eklentiyi sadece videoyu değil tüm arayüzü kontrol edecek şekle dönüştürme adımları atıldı.
-- **Gelişmiş Hareketler:** Çift işaret parmağı kaldırıldığı anda video kalitesini en yükseğe alan yeni "Kalite Arttırıcı" eylem eklendi.
+- **Gelişmiş Hareketler ve Çözünürlük Kontrolü:** "İşaret Aşağı (👇👇/👇)" hareketleri eklendi. Artık el hareketlerinizle videonun kalitesini dinamik bir şekilde yükseltebilir veya kademeli olarak düşürebilirsiniz.
+- **Duyarlı Yapay Zeka Tıklaması:** Eklenti artık YouTube kalite listesini ve seçeneklerini analiz ederek, her zaman en doğru `p` (örn: 1080p, 720p) seçeneğini bularak hatasız ayar değişikliği yapıyor.
 - **Tam Senkronizasyon (Durum Yönetimi):** Kamera Açık/Kapalı durumu artık arkaplan (background.js), görünmez sayfa (offscreen.js) ve menü (popup.html) arasında kusursuz bir şekilde senkronize çalışıyor.
 - **Hata Düzeltmeleri & İyileştirmeler:** İşaret parmağı (👉/👈) ve Barış (✌️) işareti arasındaki algılama sorunları katı kurallarla çözüldü, WebGL hataları giderildi.
 

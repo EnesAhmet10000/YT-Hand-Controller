@@ -22,10 +22,10 @@
       next: '⏭ Sonraki Video', prev: '⏮ Önceki Video',
       fsOn: '📺 Tam Ekran', fsOff: '📱 Normal Ekran', vol: 'Ses',
       active: '🖐 El Kontrolü Aktif',
-      Both_Hands: 'Çift El', Both_Index_Up: 'Çift İşaret Yukarı', Open_Palm: 'Açık El', Index_Up: 'İşaret Yukarı',
+      Both_Hands: 'Çift El', Both_Index_Up: 'Çift İşaret Yukarı', Both_Index_Down: 'Çift İşaret Aşağı', Open_Palm: 'Açık El', Index_Up: 'İşaret Yukarı', Index_Down: 'İşaret Aşağı',
       Palm_Right: 'Sağ Avuç', Palm_Left: 'Sol Avuç', Pointing_Right: 'Sağa İşaret',
       Pointing_Left: 'Sola İşaret', Peace_Sign: 'Zafer', Pinch_Volume: 'Çimdik',
-      leftClick: 'Sol Tıklandı', setMaxQuality: 'Kalite Arttırılıyor...'
+      leftClick: 'Sol Tıklandı', setMaxQuality: 'Kalite Arttırılıyor...', decreaseQualityOneStep: 'Kalite Düşürülüyor...', minQuality: 'Minimum Kalite'
     },
     en: {
       play: '▶ Playing', pause: '⏸ Paused', speed: 'Speed',
@@ -34,10 +34,10 @@
       next: '⏭ Next Video', prev: '⏮ Previous Video',
       fsOn: '📺 Fullscreen', fsOff: '📱 Normal Screen', vol: 'Volume',
       active: '🖐 Hand Control Active',
-      Both_Hands: 'Both Hands', Both_Index_Up: 'Both Index Up', Open_Palm: 'Open Palm', Index_Up: 'Index Up',
+      Both_Hands: 'Both Hands', Both_Index_Up: 'Both Index Up', Both_Index_Down: 'Both Index Down', Open_Palm: 'Open Palm', Index_Up: 'Index Up', Index_Down: 'Index Down',
       Palm_Right: 'Palm Right', Palm_Left: 'Palm Left', Pointing_Right: 'Point Right',
       Pointing_Left: 'Point Left', Peace_Sign: 'Peace Sign', Pinch_Volume: 'Pinch',
-      leftClick: 'Left Click', setMaxQuality: 'Increasing Quality...'
+      leftClick: 'Left Click', setMaxQuality: 'Increasing Quality...', decreaseQualityOneStep: 'Decreasing Quality...', minQuality: 'Minimum Quality'
     },
     ar: {
       play: '▶ تشغيل', pause: '⏸ إيقاف مؤقت', speed: 'السرعة',
@@ -46,10 +46,10 @@
       next: '⏭ الفيديو التالي', prev: '⏮ الفيديو السابق',
       fsOn: '📺 ملء الشاشة', fsOff: '📱 شاشة عادية', vol: 'الصوت',
       active: '🖐 التحكم باليد نشط',
-      Both_Hands: 'كلتا اليدين', Both_Index_Up: 'كلا السبابتين لأعلى', Open_Palm: 'كف مفتوح', Index_Up: 'السبابة لأعلى',
+      Both_Hands: 'كلتا اليدين', Both_Index_Up: 'كلا السبابتين لأعلى', Both_Index_Down: 'كلا السبابتين لأسفل', Open_Palm: 'كف مفتوح', Index_Up: 'السبابة لأعلى', Index_Down: 'السبابة لأسفل',
       Palm_Right: 'الكف لليمين', Palm_Left: 'الكف لليسار', Pointing_Right: 'إشارة لليمين',
       Pointing_Left: 'إشارة لليسار', Peace_Sign: 'علامة النصر', Pinch_Volume: 'قرصة',
-      leftClick: 'تم النقر', setMaxQuality: 'جاري زيادة الجودة...'
+      leftClick: 'تم النقر', setMaxQuality: 'جاري زيادة الجودة...', decreaseQualityOneStep: 'جاري تخفيض الجودة...', minQuality: 'في أدنى جودة'
     }
   };
   let currentLang = 'tr';
@@ -168,39 +168,98 @@
         if (qualityBtn) {
           qualityBtn.click();
           setTimeout(() => {
-            const qualityOptions = Array.from(document.querySelectorAll('.ytp-panel-menu .ytp-menuitem'));
-            // Otomatik seçeneği (en üstteki veya listeyi bozan) hariç, sadece p değerli çözünürlükleri al
-            const validOptions = qualityOptions.filter(opt => opt.innerText.match(/\d+p/i));
+            const allOptions = Array.from(document.querySelectorAll('.ytp-panel-menu .ytp-menuitem[role="menuitemradio"]'));
+            // Otomatik (Auto) seçeneğini tamamen listeden filtrele, sadece gerçek "p" değerlerini al.
+            const pOptions = allOptions.filter(opt => opt.innerText.match(/\d+p/i) && !opt.innerText.match(/Auto|Otomatik|تلقائي/i));
             
-            if (validOptions.length > 0) {
-              // Şu anki aktif kaliteyi bul (aria-checked="true" ile işaretlenir)
-              let currentIndex = validOptions.findIndex(opt => opt.getAttribute('aria-checked') === 'true');
+            if (pOptions.length > 0) {
+              const checkedOpt = allOptions.find(opt => opt.getAttribute('aria-checked') === 'true');
+              let currentIndex = -1;
+              
+              // Eğer seçili olan seçenek "Auto (720p)" gibi bir şeyse, içindeki sayıyı alıp gerçek "720p" öğesinin sırasını bul.
+              if (checkedOpt) {
+                if (checkedOpt.innerText.match(/Auto|Otomatik|تلقائي/i)) {
+                   const match = checkedOpt.innerText.match(/(\d+)p/i);
+                   if (match) currentIndex = pOptions.findIndex(opt => opt.innerText.includes(match[1] + 'p'));
+                } else {
+                   currentIndex = pOptions.indexOf(checkedOpt);
+                }
+              }
               
               if (currentIndex === -1) {
-                // Hiçbiri seçili değilse muhtemelen Auto'dadır. Auto genelde ortalama veya düşük değerde olduğundan,
-                // listeyi tarayıp en mantıklı orta kademeyi veya ilkini varsayabiliriz.
-                currentIndex = Math.floor(validOptions.length / 2);
+                currentIndex = Math.floor(pOptions.length / 2);
               }
 
-              // YouTube listesi genelde üstten aşağıya yüksekten düşüğe doğru sıralanır (Örn: 1080p, 720p, 480p).
-              // "Bir kademe yükselt" = İndeksi 1 azalt (ama 0'ın altına düşme).
+              // Liste yüksekten düşüğe sıralı olduğu için, "Artır" = İndeksi 1 azalt
               const targetIndex = Math.max(0, currentIndex - 1);
-              const targetOption = validOptions[targetIndex];
               
-              if (targetOption) {
-                targetOption.click();
+              if (pOptions[targetIndex]) {
+                pOptions[targetIndex].click();
               } else {
-                settingsBtn.click(); // Geri kapat
+                settingsBtn.click(); // Zaten maksimumdaysa kapat
               }
             } else {
                settingsBtn.click(); 
             }
-          }, 250);
+          }, 320); // YouTube arayüzü bazen geç açıldığı için süreyi ufak artırdık
         } else {
           settingsBtn.click();
         }
-      }, 250);
+      }, 320);
       return I18N[currentLang].setMaxQuality;
+    },
+    decreaseQualityOneStep: (video) => {
+      const settingsBtn = document.querySelector('.ytp-settings-button');
+      if (!settingsBtn) return null;
+      settingsBtn.click();
+      
+      setTimeout(() => {
+        const menuItems = Array.from(document.querySelectorAll('.ytp-panel-menu .ytp-menuitem'));
+        let qualityBtn = menuItems.find(item => item.innerText.match(/Quality|Kalite|الجودة|Qualité|Kvalitet|\d+p/i));
+        if (!qualityBtn && menuItems.length > 0) qualityBtn = menuItems[menuItems.length - 1]; 
+        
+        if (qualityBtn) {
+          qualityBtn.click();
+          setTimeout(() => {
+            const allOptions = Array.from(document.querySelectorAll('.ytp-panel-menu .ytp-menuitem[role="menuitemradio"]'));
+            // Otomatik (Auto) seçeneğini tamamen listeden filtrele
+            const pOptions = allOptions.filter(opt => opt.innerText.match(/\d+p/i) && !opt.innerText.match(/Auto|Otomatik|تلقائي/i));
+            
+            if (pOptions.length > 0) {
+              const checkedOpt = allOptions.find(opt => opt.getAttribute('aria-checked') === 'true');
+              let currentIndex = -1;
+              
+              if (checkedOpt) {
+                if (checkedOpt.innerText.match(/Auto|Otomatik|تلقائي/i)) {
+                   const match = checkedOpt.innerText.match(/(\d+)p/i);
+                   if (match) currentIndex = pOptions.findIndex(opt => opt.innerText.includes(match[1] + 'p'));
+                } else {
+                   currentIndex = pOptions.indexOf(checkedOpt);
+                }
+              }
+              
+              if (currentIndex === -1) {
+                currentIndex = Math.floor(pOptions.length / 2);
+              }
+
+              // Liste yüksekten düşüğe doğru (örn: 1080p, 720p, 480p). "Düşür" = İndeksi 1 ARTIR
+              const targetIndex = currentIndex + 1;
+              
+              if (targetIndex < pOptions.length) {
+                pOptions[targetIndex].click();
+              } else {
+                settingsBtn.click(); // En alt kalitedeysek menüyü kapat
+                showToast(I18N[currentLang].minQuality); // En düşük kalite uyarısı ver
+              }
+            } else {
+               settingsBtn.click(); 
+            }
+          }, 320);
+        } else {
+          settingsBtn.click();
+        }
+      }, 320);
+      return I18N[currentLang].decreaseQualityOneStep;
     },
   };
 
