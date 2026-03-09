@@ -39,6 +39,7 @@ Elleriniz yemekten kirlenmiş de olsa, resim yaparken fırçayı bırakmak istem
 
 - **Akıllı Güç Tasarrufu**: Eklentiyi menüsünden kapattığınız an tüm donanım anında serbest bırakılır ve bilgisayarınızda bir gram bile fazladan CPU harcamaz.
 - **Air Mouse Modu (Sanal İmleç)**: İşaret ve başparmağınızı birleştirip (çimdik ucu), diğer üç parmağınızı açık tutarak elinizi bir fareye dönüştürün! Ekranda beliren sanal imleci elinizle yönlendirebilir ve otomatik sol tıklama işlemi (Dwell) yapabilirsiniz.
+- **Gizlilik Odaklı Kamera Önizleme**: Pip (Picture-in-Picture) tarzı küçük bir ekranla el hareketlerinizin MediaPipe tarafından nasıl algılandığını canlı olarak YouTube üzerinde görebilirsiniz. Üstelik "Sadece İskelet" (Skeleton Only) moduyla yüzünüzü gizleyerek, sadece siyah arka plan üzerine çizilmiş el iskeletinizi izleyebilir ve gizliliğinizi koruyabilirsiniz.
 - **Çimdikleyerek Ses Kontrolü (Önerilmez)**: İşaret parmağınızı ve başparmağınızı çimdikleyerek sesi dinamik olarak değiştirin. İki parmak arasındaki mesafe, ses seviyesini gerçek zamanlı olarak ayarlar.
 
 ## 🎯 Desteklenen Hareketler
@@ -112,6 +113,7 @@ En güncel **Manifest V3** standartlarıyla inşa edilen eklenti, üçlü bir mi
 - **Gelişmiş Hareketler ve Çözünürlük Kontrolü:** "İşaret Aşağı (👇👇/👇)" hareketleri eklendi. Artık el hareketlerinizle videonun kalitesini dinamik bir şekilde yükseltebilir veya kademeli olarak düşürebilirsiniz.
 - **Duyarlı Yapay Zeka Tıklaması:** Eklenti artık YouTube kalite listesini ve seçeneklerini analiz ederek, her zaman en doğru `p` (örn: 1080p, 720p) seçeneğini bularak hatasız ayar değişikliği yapıyor.
 - **Tam Senkronizasyon (Durum Yönetimi):** Kamera Açık/Kapalı durumu artık arkaplan (background.js), görünmez sayfa (offscreen.js) ve menü (popup.html) arasında kusursuz bir şekilde senkronize çalışıyor.
+- **Gizlilik Odaklı Kamera Önizleme:** YouTube izlerken hareketlerinizi kontrol edebilmeniz için kameranızı mini bir ekranda yansıtan bildirim ekranı (Preview) ve yüzünüzü maskeleyerek gizliliğinizi en üst düzeye çıkaran "Sadece İskelet" modu sisteme dâhil edildi.
 - **Hata Düzeltmeleri & İyileştirmeler:** İşaret parmağı (👉/👈) ve Barış (✌️) işareti arasındaki algılama sorunları katı kurallarla çözüldü, WebGL hataları giderildi.
 
 ## 🤝 Katkıda Bulunma
