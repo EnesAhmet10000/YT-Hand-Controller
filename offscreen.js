@@ -112,6 +112,14 @@
     return isIndexUp(results.multiHandLandmarks[0]) && isIndexUp(results.multiHandLandmarks[1]);
   }
 
+  function isBothIndexPointingInner(lm, results) {
+    if (!results || !results.multiHandLandmarks || results.multiHandLandmarks.length !== 2) return false;
+    const hand1 = results.multiHandLandmarks[0];
+    const hand2 = results.multiHandLandmarks[1];
+    
+    return (isPointingRight(hand1) && isPointingLeft(hand2)) || (isPointingLeft(hand1) && isPointingRight(hand2));
+  }
+
   function isIndexDown(lm) {
     const indexOpenDown = lm[8].y > (lm[6].y + 0.05);
     const isMiddleClosed = euclidean(lm[12], lm[0]) < euclidean(lm[10], lm[0]);
@@ -165,6 +173,7 @@
 
   const GESTURE_TABLE = [
     { key: 'both_hands_open',recognize: isBothHandsOpen, icon: '👐', name: 'Both_Hands'     },
+    { key: 'both_index_pointing_inner', recognize: isBothIndexPointingInner, icon: '👉👈', name: 'Food_Mode' },
     { key: 'both_index_up',  recognize: isBothIndexUp,   icon: '🙌', name: 'Both_Index_Up'  },
     { key: 'both_index_down',recognize: isBothIndexDown, icon: '👇👇', name: 'Both_Index_Down'},
     { key: 'open_palm',      recognize: isOpenPalm,      icon: '✋', name: 'Open_Palm'      },
@@ -199,6 +208,7 @@
     pointing_right: { enabled: true, action: 'seekForward10' },
     pointing_left:  { enabled: true, action: 'seekBackward10'},
     peace_sign:     { enabled: true, action: 'toggleMute'    },
+    both_index_pointing_inner: { enabled: true, action: 'toggleFoodMode'},
     pinch:          { enabled: true, action: 'volumeControl' },
   };
 
@@ -242,6 +252,7 @@
       let cooldown = DEFAULT_COOLDOWN;
       if (gesture.key === 'both_hands_open') cooldown = 2000;
       if (gesture.key === 'both_index_up' || gesture.key === 'both_index_down') cooldown = 2500;
+      if (setting.action === 'toggleFoodMode') cooldown = 2500;
       if (setting.action === 'setMaxQuality' || setting.action === 'decreaseQualityOneStep') cooldown = 2500;
       if (setting.action === 'volumeUp5' || setting.action === 'volumeDown5') cooldown = 400;
       if (setting.action === 'mouseClick') cooldown = 300; // Hızlı tıklama için kısa cooldown
@@ -251,12 +262,16 @@
       dwellState.fired = true;
       lastActionTime = now;
 
-      sendMsg({
-        type: 'GESTURE_ACTION',
-        action: setting.action,
-        icon: gesture.icon,
-        gestureName: gesture.name,
-      });
+      if (setting.action === 'toggleFoodMode') {
+        sendMsg({ type: 'TOGGLE_FOOD_MODE' });
+      } else {
+        sendMsg({
+          type: 'GESTURE_ACTION',
+          action: setting.action,
+          icon: gesture.icon,
+          gestureName: gesture.name,
+        });
+      }
     }
   }
 
@@ -483,6 +498,7 @@
 
     // Hiyerarşik Eşleşme: "Orta Parmak Kilidi" prensibiyle Peace(V) mutlaka Pointing(👉/👈) öncesinde sorgulanmalı.
     if (processGesture('both_hands_open', isBothHandsOpen)) { /* matched */ }
+    else if (processGesture('both_index_pointing_inner', isBothIndexPointingInner)) { /* matched */ }
     else if (processGesture('both_index_up', isBothIndexUp)) { /* matched */ }
     else if (processGesture('both_index_down', isBothIndexDown)) { /* matched */ }
     else if (processGesture('peace_sign', isPeaceSign)) { /* matched */ } // Orta parmak kapalıysa burayı atlar

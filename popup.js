@@ -23,6 +23,7 @@ const translations = {
     vulcan: 'Vulcan',
     peace_sign: 'Zafer',
     pinch: 'Çimdik (Önerilmez)',
+    both_index_pointing_inner: 'Yemek Modu (👉+👈)',
 
     
     togglePlay: 'Oynat / Durdur',
@@ -43,6 +44,12 @@ const translations = {
     setMaxQuality: 'Kaliteyi Arttır',
     decreaseQualityOneStep: 'Kalite Düşür',
     mouseClick: 'Sol Tık (Left Click)',
+    toggleFoodMode: 'Tümünü Dondur/Aç',
+    profileLabel: 'Profil Seçimi:',
+    addProfilePromt: 'Yeni profil için bir ad girin:',
+    deleteProfileConfirm: ' profilini silmek istediğinize emin misiniz?',
+    cannotDeleteLast: 'Düzenlenecek en az 1 profil bulunmak zorundadır!',
+    cannotDeleteDefault: 'Varsayılan profil silinemez.',
     
     gestureSettings: 'Hareket Ayarları',
     statusOn: 'Aktif',
@@ -68,6 +75,7 @@ const translations = {
     vulcan: 'Vulcan',
     peace_sign: 'Peace Sign',
     pinch: 'Pinch (Not Recommended)',
+    both_index_pointing_inner: 'Food Mode (👉+👈)',
 
     
     togglePlay: 'Play / Pause',
@@ -88,6 +96,12 @@ const translations = {
     setMaxQuality: 'Increase Quality',
     decreaseQualityOneStep: 'Decrease Quality',
     mouseClick: 'Left Click',
+    toggleFoodMode: 'Freeze All Gestures',
+    profileLabel: 'Select Profile:',
+    addProfilePromt: 'Enter name for the new profile:',
+    deleteProfileConfirm: 'Are you sure you want to delete profile: ',
+    cannotDeleteLast: 'There must be at least 1 profile to edit!',
+    cannotDeleteDefault: 'The Default profile cannot be deleted.',
     
     gestureSettings: 'Gesture Settings',
     statusOn: 'Active',
@@ -113,6 +127,7 @@ const translations = {
     vulcan: 'فولكان',
     peace_sign: 'علامة النصر',
     pinch: 'قرصة (غير مستحسن)',
+    both_index_pointing_inner: 'وضع الطعام (👉+👈)',
 
     
     togglePlay: 'تشغيل / إيقاف',
@@ -133,6 +148,12 @@ const translations = {
     setMaxQuality: 'زيادة الجودة',
     decreaseQualityOneStep: 'تخفيض الجودة',
     mouseClick: 'نقر أيسر (Left Click)',
+    toggleFoodMode: 'تجميد الإيماءات',
+    profileLabel: 'اختر الملف الشخصي:',
+    addProfilePromt: 'أدخل اسمًا للملف الشخصي الجديد:',
+    deleteProfileConfirm: 'هل أنت متأكد أنك تريد حذف الملف الشخصي: ',
+    cannotDeleteLast: 'يجب أن يكون هناك ملف شخصي واحد على الأقل للتعديل!',
+    cannotDeleteDefault: 'لا يمكن حذف الملف الشخصي الافتراضي.',
     
     gestureSettings: 'إعدادات الإيماءات',
     statusOn: 'نشط',
@@ -158,6 +179,7 @@ const GESTURES = [
   { key: 'pointing_right', icon: '👉' },
   { key: 'pointing_left',  icon: '👈' },
   { key: 'peace_sign',     icon: '✌️' },
+  { key: 'both_index_pointing_inner', icon: '👉👈' },
   { key: 'pinch',          icon: '🤏' },
 
 ];
@@ -180,6 +202,7 @@ const ACTIONS = [
   { value: 'setMaxQuality' },
   { value: 'decreaseQualityOneStep' },
   { value: 'mouseClick' },
+  { value: 'toggleFoodMode' },
 ];
 
 const DEFAULT_SETTINGS = {
@@ -194,6 +217,7 @@ const DEFAULT_SETTINGS = {
   pointing_right: { enabled: true, action: 'seekForward10' },
   pointing_left:  { enabled: true, action: 'seekBackward10'},
   peace_sign:     { enabled: true, action: 'toggleMute'    },
+  both_index_pointing_inner: { enabled: true, action: 'toggleFoodMode'},
   pinch:          { enabled: true, action: 'volumeControl' },
 
 };
@@ -215,9 +239,14 @@ const previewModeLabel = document.getElementById('previewModeLabel');
 const previewModeSelect = document.getElementById('previewModeSelect');
 const optFullVideo = document.getElementById('optFullVideo');
 const optSkeleton = document.getElementById('optSkeleton');
+const profileLabelElem = document.getElementById('profileLabel');
+const profileSelect = document.getElementById('profileSelect');
+const addProfileBtn = document.getElementById('addProfileBtn');
+const deleteProfileBtn = document.getElementById('deleteProfileBtn');
 
 let currentLang = 'tr';
-
+let profiles = {};
+let activeProfile = 'Default';
 
 // ─── UI: Camera Toggle Logic ───────────────────────────────────────────────────
 
@@ -266,6 +295,10 @@ toggle.addEventListener('change', async () => {
 chrome.runtime.onMessage.addListener((message) => {
   if (message.type === 'CAMERA_STATUS_UPDATE') {
     updateCameraUI(message.active);
+  } else if (message.type === 'FOOD_MODE_UPDATE') {
+    if (message.gestureSettings) {
+      buildGestureRows(message.gestureSettings);
+    }
   }
 });
 
@@ -339,11 +372,20 @@ function buildGestureRows(settings) {
 }
 
 function saveSetting(key, value) {
-  chrome.storage.local.get({ gestureSettings: DEFAULT_SETTINGS }, (data) => {
-    const settings = { ...DEFAULT_SETTINGS, ...data.gestureSettings };
-    settings[key] = value;
-    chrome.storage.local.set({ gestureSettings: settings }, () => {
-      chrome.runtime.sendMessage({ type: 'UPDATE_SETTINGS', gestureSettings: settings });
+  if (!profiles[activeProfile]) return;
+  profiles[activeProfile].gestureSettings[key] = value;
+  saveProfilesToStorage();
+}
+
+function saveProfilesToStorage() {
+  chrome.storage.local.set({ profiles, activeProfile }, () => {
+    const p = profiles[activeProfile];
+    chrome.runtime.sendMessage({ 
+      type: 'UPDATE_SETTINGS', 
+      gestureSettings: p.gestureSettings,
+      airMouseEnabled: p.airMouseEnabled,
+      previewEnabled: p.previewEnabled,
+      previewMode: p.previewMode
     });
   });
 }
@@ -373,16 +415,40 @@ function setLanguage(lang, settings) {
     if (optFullVideo) optFullVideo.textContent = translations[lang].optFullVideo;
     if (optSkeleton) optSkeleton.textContent = translations[lang].optSkeleton;
   }
+  if (profileLabelElem) profileLabelElem.textContent = translations[lang].profileLabel;
   
   updateCameraUI(toggle.checked);
   
   if (settings) {
     buildGestureRows(settings);
-  } else {
-    chrome.storage.local.get({ gestureSettings: DEFAULT_SETTINGS }, (data) => {
-      buildGestureRows({ ...DEFAULT_SETTINGS, ...data.gestureSettings });
-    });
+  } else if (profiles && profiles[activeProfile]) {
+    buildGestureRows(profiles[activeProfile].gestureSettings);
   }
+}
+
+function applyProfileToUI() {
+  if (!profiles[activeProfile]) return;
+  const p = profiles[activeProfile];
+  
+  if (airMouseToggle) airMouseToggle.checked = p.airMouseEnabled;
+  if (previewToggle) {
+    previewToggle.checked = p.previewEnabled;
+    if (previewModeContainer) previewModeContainer.style.display = p.previewEnabled ? 'flex' : 'none';
+  }
+  if (previewModeSelect) previewModeSelect.value = p.previewMode;
+
+  if (profileSelect) {
+    profileSelect.innerHTML = '';
+    for (const pName in profiles) {
+      const opt = document.createElement('option');
+      opt.value = pName;
+      opt.textContent = pName;
+      if (pName === activeProfile) opt.selected = true;
+      profileSelect.appendChild(opt);
+    }
+  }
+
+  buildGestureRows(p.gestureSettings);
 }
 
 langSelect.addEventListener('change', (e) => {
@@ -392,20 +458,37 @@ langSelect.addEventListener('change', (e) => {
 // ─── Initialization ───────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Ayarları getir ve UI oluştur
-  chrome.storage.local.get({ language: 'tr', gestureSettings: DEFAULT_SETTINGS, airMouseEnabled: false, previewEnabled: false, previewMode: 'full' }, (data) => {
-    if (airMouseToggle) airMouseToggle.checked = data.airMouseEnabled;
-    if (previewToggle) {
-      previewToggle.checked = data.previewEnabled;
-      if (previewModeContainer) previewModeContainer.style.display = data.previewEnabled ? 'flex' : 'none';
+  // 1. Storage'dan Profil Bilgilerini Çek ve UI Oluştur
+  chrome.storage.local.get({ language: 'tr', profiles: null, activeProfile: 'Default' }, (data) => {
+    if (!data.profiles) {
+      // Eski sürüm kuralı, yeni sisteme migrate et
+      chrome.storage.local.get({ gestureSettings: DEFAULT_SETTINGS, airMouseEnabled: false, previewEnabled: false, previewMode: 'full' }, (oldData) => {
+        profiles = {
+          'Default': {
+            gestureSettings: oldData.gestureSettings || DEFAULT_SETTINGS,
+            airMouseEnabled: oldData.airMouseEnabled || false,
+            previewEnabled: oldData.previewEnabled || false,
+            previewMode: oldData.previewMode || 'full'
+          }
+        };
+        activeProfile = 'Default';
+        chrome.storage.local.set({ profiles, activeProfile });
+        applyProfileToUI();
+        setLanguage(data.language, profiles[activeProfile].gestureSettings);
+      });
+    } else {
+      profiles = data.profiles;
+      activeProfile = data.activeProfile;
+      if (!profiles[activeProfile]) {
+        activeProfile = Object.keys(profiles)[0] || 'Default';
+        if (!profiles[activeProfile]) {
+          profiles['Default'] = { gestureSettings: DEFAULT_SETTINGS, airMouseEnabled: false, previewEnabled: false, previewMode: 'full' };
+          activeProfile = 'Default';
+        }
+      }
+      applyProfileToUI();
+      setLanguage(data.language, profiles[activeProfile].gestureSettings);
     }
-    if (previewModeSelect) previewModeSelect.value = data.previewMode;
-    
-    const settings = { ...DEFAULT_SETTINGS, ...data.gestureSettings };
-    if (!data.gestureSettings) {
-      chrome.storage.local.set({ gestureSettings: settings });
-    }
-    setLanguage(data.language, settings);
   });
 
   // 2. Mevcut kamera durumunu background'dan sor
@@ -413,31 +496,83 @@ document.addEventListener('DOMContentLoaded', () => {
     if (res) updateCameraUI(res.cameraOn);
   });
 
-  // 3. Air Mouse Toggle Dinleyicisi
-  if (airMouseToggle) {
-    airMouseToggle.addEventListener('change', () => {
-      chrome.storage.local.set({ airMouseEnabled: airMouseToggle.checked }, () => {
-        chrome.runtime.sendMessage({ type: 'UPDATE_SETTINGS', airMouseEnabled: airMouseToggle.checked });
-      });
+  // 3. Profil Seçimi
+  if (profileSelect) {
+    profileSelect.addEventListener('change', (e) => {
+      activeProfile = e.target.value;
+      applyProfileToUI();
+      saveProfilesToStorage();
     });
   }
 
-  // 4. Preview Toggle Dinleyicisi
+  // 4. Yeni Profil Ekleme
+  if (addProfileBtn) {
+    addProfileBtn.addEventListener('click', () => {
+      const name = prompt(translations[currentLang].addProfilePromt);
+      if (name && name.trim() !== '') {
+        const pName = name.trim();
+        if (!profiles[pName]) {
+          profiles[pName] = { 
+            gestureSettings: JSON.parse(JSON.stringify(DEFAULT_SETTINGS)), 
+            airMouseEnabled: false, 
+            previewEnabled: false, 
+            previewMode: 'full' 
+          };
+          activeProfile = pName;
+          applyProfileToUI();
+          saveProfilesToStorage();
+        }
+      }
+    });
+  }
+
+  // 4b. Profil Silme
+  if (deleteProfileBtn) {
+    deleteProfileBtn.addEventListener('click', () => {
+      const pName = activeProfile;
+      if (pName === 'Default') {
+        alert(translations[currentLang].cannotDeleteDefault);
+        return;
+      }
+      
+      const profileNames = Object.keys(profiles);
+      if (profileNames.length <= 1) {
+        alert(translations[currentLang].cannotDeleteLast);
+        return;
+      }
+
+      const confirmed = confirm(`"${pName}"` + translations[currentLang].deleteProfileConfirm);
+      if (confirmed) {
+        delete profiles[pName];
+        activeProfile = Object.keys(profiles)[0] || 'Default';
+        applyProfileToUI();
+        saveProfilesToStorage();
+      }
+    });
+  }
+
+  // 5. Air Mouse Toggle Dinleyicisi
+  if (airMouseToggle) {
+    airMouseToggle.addEventListener('change', () => {
+      profiles[activeProfile].airMouseEnabled = airMouseToggle.checked;
+      saveProfilesToStorage();
+    });
+  }
+
+  // 6. Preview Toggle Dinleyicisi
   if (previewToggle) {
     previewToggle.addEventListener('change', () => {
       if (previewModeContainer) previewModeContainer.style.display = previewToggle.checked ? 'flex' : 'none';
-      chrome.storage.local.set({ previewEnabled: previewToggle.checked }, () => {
-        chrome.runtime.sendMessage({ type: 'TOGGLE_PREVIEW', previewEnabled: previewToggle.checked });
-      });
+      profiles[activeProfile].previewEnabled = previewToggle.checked;
+      saveProfilesToStorage();
     });
   }
 
-  // 5. Preview Mode Dinleyicisi
+  // 7. Preview Mode Dinleyicisi
   if (previewModeSelect) {
     previewModeSelect.addEventListener('change', () => {
-      chrome.storage.local.set({ previewMode: previewModeSelect.value }, () => {
-        chrome.runtime.sendMessage({ type: 'UPDATE_PREVIEW_MODE', previewMode: previewModeSelect.value });
-      });
+      profiles[activeProfile].previewMode = previewModeSelect.value;
+      saveProfilesToStorage();
     });
   }
 });

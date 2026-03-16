@@ -111,6 +111,48 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
+  if (message.type === 'TOGGLE_FOOD_MODE') {
+    chrome.storage.local.get({ profiles: null, activeProfile: 'Default', isFoodMode: false, tempDisabledStates: {} }, (data) => {
+      let profiles = data.profiles;
+      let activeProfile = data.activeProfile;
+      if (!profiles || !profiles[activeProfile]) return;
+      
+      let settings = profiles[activeProfile].gestureSettings || {};
+      let isFoodMode = data.isFoodMode;
+      let tempDisabledStates = data.tempDisabledStates;
+      
+      if (!isFoodMode) {
+        isFoodMode = true;
+        tempDisabledStates = {};
+        for (const key in settings) {
+          // Yemek modunu geri kapatacak olan "toggleFoodMode" eylemine sahip hareketler ASLA dondurulmaz.
+          if (settings[key].enabled && settings[key].action !== 'toggleFoodMode') {
+            tempDisabledStates[key] = true;
+            settings[key].enabled = false;
+          }
+        }
+        forwardToActiveYouTubeTab({ type: 'FOOD_MODE_ACTIVATED' });
+      } else {
+        isFoodMode = false;
+        for (const key in tempDisabledStates) {
+          if (settings[key]) {
+            settings[key].enabled = true;
+          }
+        }
+        tempDisabledStates = {};
+        forwardToActiveYouTubeTab({ type: 'FOOD_MODE_DEACTIVATED' });
+      }
+      
+      profiles[activeProfile].gestureSettings = settings;
+      chrome.storage.local.set({ profiles: profiles, isFoodMode: isFoodMode, tempDisabledStates: tempDisabledStates }, () => {
+        safeSendMessage({ type: 'UPDATE_SETTINGS', gestureSettings: settings });
+        safeSendMessage({ type: 'FOOD_MODE_UPDATE', gestureSettings: settings });
+      });
+    });
+    sendResponse({ status: 'ok' });
+    return true;
+  }
+
   // Keep-Alive desteği: Offscreen sayfasının kapanmasını önlemek için
   if (message.type === 'KEEP_ALIVE') {
     sendResponse({ status: 'awake' });
@@ -140,8 +182,11 @@ async function handleSetState(message, sendResponse) {
     
     // Yükleme süresi boyunca kullanıcı kamerayı geri KAPATMIŞ olabilir mi?
     if (intendedCameraState) {
-      const data = await chrome.storage.local.get({ gestureSettings: null, airMouseEnabled: false, previewEnabled: false, previewMode: 'full' });
-      safeSendMessage({ type: 'START_CAMERA', gestureSettings: data.gestureSettings, airMouseEnabled: data.airMouseEnabled, previewEnabled: data.previewEnabled, previewMode: data.previewMode });
+      const data = await chrome.storage.local.get({ profiles: null, activeProfile: 'Default' });
+      const activeProf = data.activeProfile || 'Default';
+      const profData = (data.profiles && data.profiles[activeProf]) ? data.profiles[activeProf] : { gestureSettings: null, airMouseEnabled: false, previewEnabled: false, previewMode: 'full' };
+      
+      safeSendMessage({ type: 'START_CAMERA', gestureSettings: profData.gestureSettings, airMouseEnabled: profData.airMouseEnabled, previewEnabled: profData.previewEnabled, previewMode: profData.previewMode });
     }
   } else {
     safeSendMessage({ type: 'STOP_CAMERA' });

@@ -25,7 +25,8 @@
       Both_Hands: 'Çift El', Both_Index_Up: 'Çift İşaret Yukarı', Both_Index_Down: 'Çift İşaret Aşağı', Open_Palm: 'Açık El', Index_Up: 'İşaret Yukarı', Index_Down: 'İşaret Aşağı',
       Palm_Right: 'Sağ Avuç', Palm_Left: 'Sol Avuç', Pointing_Right: 'Sağa İşaret',
       Pointing_Left: 'Sola İşaret', Peace_Sign: 'Zafer', Pinch_Volume: 'Çimdik',
-      leftClick: 'Sol Tıklandı', setMaxQuality: 'Kalite Arttırılıyor...', decreaseQualityOneStep: 'Kalite Düşürülüyor...', minQuality: 'Minimum Kalite'
+      leftClick: 'Sol Tıklandı', setMaxQuality: 'Kalite Arttırılıyor...', decreaseQualityOneStep: 'Kalite Düşürülüyor...', minQuality: 'Minimum Kalite',
+      foodModeOn: '🍿 Yemek Modu: Hareketler Donduruldu', foodModeOff: '🎬 Hareketler Aktif', Food_Mode: 'Yemek Modu'
     },
     en: {
       play: '▶ Playing', pause: '⏸ Paused', speed: 'Speed',
@@ -37,7 +38,8 @@
       Both_Hands: 'Both Hands', Both_Index_Up: 'Both Index Up', Both_Index_Down: 'Both Index Down', Open_Palm: 'Open Palm', Index_Up: 'Index Up', Index_Down: 'Index Down',
       Palm_Right: 'Palm Right', Palm_Left: 'Palm Left', Pointing_Right: 'Point Right',
       Pointing_Left: 'Point Left', Peace_Sign: 'Peace Sign', Pinch_Volume: 'Pinch',
-      leftClick: 'Left Click', setMaxQuality: 'Increasing Quality...', decreaseQualityOneStep: 'Decreasing Quality...', minQuality: 'Minimum Quality'
+      leftClick: 'Left Click', setMaxQuality: 'Increasing Quality...', decreaseQualityOneStep: 'Decreasing Quality...', minQuality: 'Minimum Quality',
+      foodModeOn: '🍿 Food Mode: Gestures Frozen', foodModeOff: '🎬 Gestures Active', Food_Mode: 'Food Mode'
     },
     ar: {
       play: '▶ تشغيل', pause: '⏸ إيقاف مؤقت', speed: 'السرعة',
@@ -49,7 +51,8 @@
       Both_Hands: 'كلتا اليدين', Both_Index_Up: 'كلا السبابتين لأعلى', Both_Index_Down: 'كلا السبابتين لأسفل', Open_Palm: 'كف مفتوح', Index_Up: 'السبابة لأعلى', Index_Down: 'السبابة لأسفل',
       Palm_Right: 'الكف لليمين', Palm_Left: 'الكف لليسار', Pointing_Right: 'إشارة لليمين',
       Pointing_Left: 'إشارة لليسار', Peace_Sign: 'علامة النصر', Pinch_Volume: 'قرصة',
-      leftClick: 'تم النقر', setMaxQuality: 'جاري زيادة الجودة...', decreaseQualityOneStep: 'جاري تخفيض الجودة...', minQuality: 'في أدنى جودة'
+      leftClick: 'تم النقر', setMaxQuality: 'جاري زيادة الجودة...', decreaseQualityOneStep: 'جاري تخفيض الجودة...', minQuality: 'في أدنى جودة',
+      foodModeOn: '🍿 وضع الطعام: تم تجميد الإيماءات', foodModeOff: '🎬 الإيماءات نشطة', Food_Mode: 'وضع الطعام'
     }
   };
   let currentLang = 'tr';
@@ -672,6 +675,17 @@
         } else {
           removeOverlay();
         }
+        return;
+      }
+
+      if (message.type === 'FOOD_MODE_ACTIVATED') {
+        getOrCreateOverlay();
+        showToast(I18N[currentLang].foodModeOn);
+        return;
+      }
+
+      if (message.type === 'FOOD_MODE_DEACTIVATED') {
+        showToast(I18N[currentLang].foodModeOff);
         return;
       }
 
