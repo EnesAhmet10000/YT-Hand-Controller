@@ -2,6 +2,12 @@
 
 [English](#en-english) | [Türkçe](#tr-türkçe) | [العربية](#ar-العربية)
 
+downloude tutorial
+https://youtu.be/9hhPxvBbwAk
+
+use tutorial
+https://youtu.be/VZ7d-i0PG4Q
+
 ---
 
 <h2 id="en-english">🇬🇧 English</h2>
